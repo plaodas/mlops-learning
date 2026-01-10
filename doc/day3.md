@@ -165,6 +165,7 @@ kubectl rollout status deployment/argo-server -n argo
 
 
 
+## 参考
 
 ```bash
 # ARGOがSSL接続を期待しているので設定を追加して接続確認（自己署名証明書による検証）

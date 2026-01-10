@@ -85,7 +85,7 @@ flowchart TD
 
 ---
 
-## 🚀 Quick Start
+<!-- ## 🚀 Quick Start
 
 ### 1. Kubernetes（Kind）
 ```bash
@@ -111,7 +111,7 @@ helm install monitoring ./helm/monitoring
 ### 5. Streamlit
 ```bash
 streamlit run streamlit/app.py
-```
+``` -->
 
 Learning Log（学習ログ公開）
 このプロジェクトは、MLOps の学習過程を公開しながら構築しています。
