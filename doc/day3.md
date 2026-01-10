@@ -1,6 +1,5 @@
 
 ## KindでのローカルKubernetes Clusterの設定 とIngressでのnginx デプロイ
-
 ```bash
 # Install Kind
 [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
@@ -96,19 +95,20 @@ kubectl patch deployment argo-server -n argo --type='json' \
   -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args","value":["server","--auth-mode=server"]}]'
 kubectl rollout status deployment/argo-server -n argo
 ```
-
-# argoの認証なし設定について
+### argoの認証なし設定について
 [ローカル向け：Argo 認証を一時的に無効化する手順](doc/local-auth.md)
 
 
 
-# Argo Workflows の動作確認
+## Hello World ワークフローの実行
+```bash
+kubectl apply -f hello-world.yaml -n argo
+```
+## Argo Workflows の動作確認
 ブラウザで確認
 https://argo.local/workflows/argo
 
-
-
-
+![argo workflow](image_argo_hello_world.png)
 
 
 
@@ -144,7 +144,10 @@ kubectl apply -f argo-ingress.yaml -n argo
 # Create and apply TLS secret for Argo
 ./scripts/create-argo-secret.sh
 
-
+kubectl patch deployment argo-server -n argo --type='json' \
+  -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args","value":["server","--auth-mode=server"]}]'
+kubectl rollout status deployment/argo-server -n argo
+```
 
 
 
