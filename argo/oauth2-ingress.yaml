@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argo-oauth2-ingress
+  namespace: argo
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - argo.local
+    secretName: argo-tls
+  rules:
+  - host: argo.local
+    http:
+      paths:
+      - path: /oauth2
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy-mock
+            port:
+              number: 4180
+      - path: /oauth2/
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy-mock
+            port:
+              number: 4180

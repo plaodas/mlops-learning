@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow:latest
+        # --allowed-hosts と --cors-allowed-origins を追加しようね
+        args: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000", "--allowed-hosts", "mlflow.local,mlflow-svc.mlflow.svc.cluster.local", "--cors-allowed-origins", "http://localhost:3000,https://example.com"]
+        ports:
+        - containerPort: 5000
