@@ -14,3 +14,14 @@ spec:
       env:
       - name: MLFLOW_TRACKING_URI
         value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
+      volumeMounts:
+      - name: train-script
+        mountPath: /train.py
+        subPath: train.py
+    volumes:
+    - name: train-script
+      configMap:
+        name: mlflow-train-script
+        items:
+        - key: train.py
+          path: train.py

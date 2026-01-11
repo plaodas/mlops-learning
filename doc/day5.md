@@ -32,6 +32,45 @@ containerdConfigPatches:
       endpoint = ["http://registry5001:5000"]
 ```
 
+## RBAC 設定を確認する
+`wait: Error (exit code 64): workflowtaskresults.argoproj.io is forbidden: User "system:serviceaccount:argo:default" cannot create resource "workflowtaskresults" in API group "argoproj.io" in the namespace "argo"`エラーが出た場合RBAC設定を確認する
+
+作成したマニフェスト
+- Role（namespace: argo）: workflowtaskresults に対する create/get/list/watch/update/patch/delete を許可
+- RoleBinding（namespace: argo）: Role を ServiceAccount: default（namespace: argo）にバインド
+```bash
+cat <<'EOF' | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argo-workflowtaskresults-role
+  namespace: argo
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["workflowtaskresults"]
+  verbs: ["create","get","list","watch","update","patch","delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-workflowtaskresults-binding
+  namespace: argo
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: argo
+roleRef:
+  kind: Role
+  name: argo-workflowtaskresults-role
+  apiGroup: rbac.authorization.k8s.io
+EOF
+```
+- 権限確認:
+```bash
+kubectl auth can-i create workflowtaskresults --as=system:serviceaccount:argo:default -n argo
+```
+
+
 ## Argo UI で確認する
 ブラウザで確認
 https://argo.local/workflows/argo/mlflow-train
@@ -74,52 +113,44 @@ kubectl -n argo get workflows mlflow-train -o wide
 # または Pod を確認してログを見る
 kubectl -n argo get pods -l workflows.argoproj.io/workflow=mlflow-train
 kubectl -n argo logs mlflow-train
-
-
 ```
 
 
 
 
-## RBAC 設定を確認する
-`wait: Error (exit code 64): workflowtaskresults.argoproj.io is forbidden: User "system:serviceaccount:argo:default" cannot create resource "workflowtaskresults" in API group "argoproj.io" in the namespace "argo"`エラーが出た場合RBAC設定を確認する
-
-作成したマニフェスト
-- Role（namespace: argo）: workflowtaskresults に対する create/get/list/watch/update/patch/delete を許可
-- RoleBinding（namespace: argo）: Role を ServiceAccount: default（namespace: argo）にバインド
+## Argo Workflows で学習スクリプトを ConfigMap 経由で渡す方法
 ```bash
-cat <<'EOF' | kubectl apply -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: argo-workflowtaskresults-role
-  namespace: argo
-rules:
-- apiGroups: ["argoproj.io"]
-  resources: ["workflowtaskresults"]
-  verbs: ["create","get","list","watch","update","patch","delete"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: argo-workflowtaskresults-binding
-  namespace: argo
-subjects:
-- kind: ServiceAccount
-  name: default
-  namespace: argo
-roleRef:
-  kind: Role
-  name: argo-workflowtaskresults-role
-  apiGroup: rbac.authorization.k8s.io
-EOF
+# train.py を ConfigMap として作成する
+kubectl -n argo create configmap mlflow-train-script --from-file=train.py --dry-run=client -o yaml | kubectl apply -f -
+# mlflow-train-workflow.yaml の container セクションに volumeMounts と volumes を追加する
+# 部分抜粋: templates[].name: train
+- name: train
+  container:
+    image: registry5001:5000/mlflow-argo-train:latest
+    command: ["python"]
+    args: ["/train.py"]
+    env:
+    - name: MLFLOW_TRACKING_URI
+      value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
+    volumeMounts:
+    - name: train-script
+      mountPath: /train.py
+      subPath: train.py
+  volumes:
+  - name: train-script
+    configMap:
+      name: mlflow-train-script
+      items:
+      - key: train.py
+        path: train.py
+
+# ワークフローを再適用して実行する
+kubectl -n argo delete workflow mlflow-train || true
+kubectl -n argo create -f mlflow-train-workflow.yaml
+
+
+# train.py を修正した場合、ConfigMap を更新してワークフローを再実行する
+kubectl -n argo create configmap mlflow-train-script --from-file=train.py --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n argo delete workflow mlflow-train || true
+kubectl -n argo create -f mlflow-train-workflow.yaml
 ```
-- 権限確認:
-```bash
-kubectl auth can-i create workflowtaskresults --as=system:serviceaccount:argo:default -n argo
-```
-
-
-
-
-

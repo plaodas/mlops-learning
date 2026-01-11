@@ -1,0 +1,3 @@
+from typing import Any
+
+def load_iris(return_X_y: bool = False, as_frame: bool = False) -> Any: ...
