@@ -1,0 +1,20 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+
+This file is a copy of the upstream `values.yaml` to make the patched chart
+reproducible in this repository. The chart still depends on the `common` chart
+from the Bitnami charts OCI registry.
+*/ -}}
+
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  defaultStorageClass: ""
+  security:
+    allowInsecureImages: false
+  compatibility:
+    openshift:
+      adaptSecurityContext: auto
+
+# (truncated) upstream defaults included; use upstream chart for full details.

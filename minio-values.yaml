@@ -1,0 +1,38 @@
+accessKey: minio
+secretKey: minio123
+defaultBucket:
+  enabled: true
+  name: argo-artifacts
+auth:
+  rootUser: minio
+  rootPassword: minio123
+image:
+  repository: minio/minio
+  tag: RELEASE.2025-07-23T15-54-02Z
+global:
+  security:
+    allowInsecureImages: true
+
+# When using the official `minio/minio` image (not Bitnami), ensure the container
+# starts the server subcommand. By default the chart expects Bitnami's image which
+# wraps the startup; for the official image we provide command/args below.
+command:
+  - "minio"
+args:
+  - "server"
+  - "/bitnami/minio/data"
+
+# Disable the Bitnami console until a compatible console image/tag is selected
+console:
+  enabled: false
+
+# NOTE: MINIO_BROWSER is managed via `minioBrowser` below to avoid duplicates
+
+# Expose MinIO service as NodePort so the UI is reachable from the host
+service:
+  type: NodePort
+  nodePorts:
+    api: 30090
+
+# Set minioBrowser value read by the patched chart template ("on"/"off")
+minioBrowser: "on"

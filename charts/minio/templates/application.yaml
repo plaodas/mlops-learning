@@ -1,0 +1,62 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $fullname := include "common.names.fullname" . }}
+{{- $headlessService := printf "%s-headless" (include "common.names.fullname" .) | trunc 63 }}
+{{- $releaseNamespace := include "common.names.namespace" . }}
+{{- $clusterDomain := .Values.clusterDomain }}
+{{- $apiPort := toString .Values.containerPorts.api }}
+{{- $replicaCount := int .Values.statefulset.replicaCount }}
+{{- $zoneCount := int .Values.statefulset.zones }}
+{{- $drivesPerNode := int .Values.statefulset.drivesPerNode }}
+{{- $mountPath := .Values.persistence.mountPath }}
+apiVersion: {{ ternary (include "common.capabilities.statefulset.apiVersion" .) (include "common.capabilities.deployment.apiVersion" .) (eq .Values.mode "distributed") }}
+kind: {{ ternary "StatefulSet" "Deployment" (eq .Values.mode "distributed") }}
+metadata:
+  name: {{ $fullname }}
+  namespace: {{ $releaseNamespace | quote  }}
+  labels: {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
+    app.kubernetes.io/component: minio
+    app.kubernetes.io/part-of: minio
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" .) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- $podLabels := include "common.tplvalues.merge" (dict "values" (list .Values.podLabels .Values.commonLabels ) "context" . ) }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" (dict "customLabels" $podLabels "context" .) | nindent 6 }}
+      app.kubernetes.io/component: minio
+      app.kubernetes.io/part-of: minio
+  template:
+    metadata:
+      labels: {{- include "common.labels.standard" (dict "customLabels" $podLabels "context" .) | nindent 8 }}
+        app.kubernetes.io/component: minio
+        app.kubernetes.io/part-of: minio
+    spec:
+      serviceAccountName: {{ template "minio.serviceAccountName" . }}
+      {{- include "minio.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: minio
+          image: {{ include "minio.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          {{- if .Values.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.command "context" .) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" .) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" .Values.image.debug | quote }}
+            - name: MINIO_API_PORT_NUMBER
+              value: {{ .Values.containerPorts.api | quote }}
+            - name: MINIO_BROWSER
+              value: {{ default "off" .Values.minioBrowser | quote }}
+            {{- if .Values.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" .) | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: api
+              containerPort: {{ .Values.containerPorts.api }}

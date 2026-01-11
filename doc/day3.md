@@ -1,3 +1,11 @@
+## hostsファイルの編集
+```# hostsファイルに以下を追加
+127.0.0.1 nginx.local
+127.0.0.1 mlflow.local
+127.0.0.1 argo.local
+127.0.0.1 registry5001
+```
+Windowsのhostsファイルにも追加しておく
 
 ## KindでのローカルKubernetes Clusterの設定 とIngressでのnginx デプロイ
 ```bash
@@ -5,6 +13,11 @@
 [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
+
+# Install Helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
+chmod 700 get_helm.sh
+./get_helm.sh
 
 # Create Kind Cluster
 # kind create cluster --name agritech-mlops
@@ -175,7 +188,7 @@ kubectl rollout status deployment/argo-server -n argo
 curl -v -k https://argo.local
 
 # mkcert のインストールと argo.local 用の信頼された証明書作成
-sudo apt install libnss3-tools
+sudo apt install libnss3-tools helm jq -y
 curl -JLO \"https://dl.filippo.io/mkcert/latest?for=linux/amd64\" && chmod +x mkcert && sudo mv mkcert /usr/local/bin/
 mkcert -install
 mkcert argo.local
