@@ -7,7 +7,8 @@ chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 
 # Create Kind Cluster
-kind create cluster --name agritech-mlops
+# kind create cluster --name agritech-mlops
+kind create cluster --name agritech-mlops --image kindest/node:v1.26.3 --config kind-config.yaml --wait 5m
 kubectl get nodes
 
 # Kubernetes Dashboard
@@ -119,8 +120,9 @@ https://argo.local/workflows/argo
 ```bash
 # Recreate cluster with ingress-ready node label ポートの再マッピング時
 kind delete cluster --name agritech-mlops
-kind create cluster --name agritech-mlops --config kind-config.yaml
-
+# kind create cluster --name agritech-mlops --config kind-config.yaml
+# kindest/node:v1.26.3 train workflow:5001 ポートマッピング対応版
+kind create cluster --name agritech-mlops --image kindest/node:v1.26.3 --config kind-config.yaml --wait 5m
 # Nginx Demo App
 kubectl apply -f nginx-deploy.yaml
 kubectl apply -f nginx-svc.yaml
@@ -143,7 +145,7 @@ kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/lat
 kubectl apply -f argo-ingress.yaml -n argo
 # Create and apply TLS secret for Argo
 ./scripts/create-argo-secret.sh
-
+# 認証を無効化
 kubectl patch deployment argo-server -n argo --type='json' \
   -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args","value":["server","--auth-mode=server"]}]'
 kubectl rollout status deployment/argo-server -n argo

@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: mlflow-train
+  namespace: argo
+spec:
+  entrypoint: train
+  templates:
+  - name: train
+    container:
+      image: registry5001:5000/mlflow-argo-train:latest
+      command: ["python"]
+      args: ["/train.py"]
+      env:
+      - name: MLFLOW_TRACKING_URI
+        value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
