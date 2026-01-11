@@ -112,7 +112,8 @@ kubectl -n argo get workflows mlflow-train -o wide
 
 # または Pod を確認してログを見る
 kubectl -n argo get pods -l workflows.argoproj.io/workflow=mlflow-train
-kubectl -n argo logs mlflow-train
+kubectl -n argo logs mlflow-train   # 失敗/完了した Pod の名前を指定
+kubectl -n argo logs <pod-name> -c main # コンテナ名がある場合
 ```
 
 
