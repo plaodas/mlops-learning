@@ -1,5 +1,5 @@
 # DAGパイプラインの作成と実行
-Argo Workflows を使って DAG パイプラインを作成し、MLflow を使ったモデル学習を実行します。
+Argo Workflows を使って DAG（Directed Acyclic Graph） パイプラインを作成し、MLflow を使ったモデル学習を実行します。
 
 ## preprocessing -> training -> evaluation の順にタスクが実行される DAG パイプラインを作成します。
 pipelines/dag/ に
