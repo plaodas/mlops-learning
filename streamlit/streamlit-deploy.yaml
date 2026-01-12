@@ -16,5 +16,6 @@ spec:
       containers:
       - name: streamlit
         image: localhost:5001/streamlit-iris:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8501

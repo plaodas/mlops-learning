@@ -50,18 +50,8 @@ kind load docker-image localhost:5001/streamlit-iris:latest --name agritech-mlop
 # kind control-plane コンテナ名を確認してから実行（クラスタ名が agritech-mlops の場合）
 docker exec -it agritech-mlops-control-plane ctr -n k8s.io images ls | grep streamlit-iris || true
 # Deployment を再起動する
-kubectl -n mlflow rollout restart deployment streamlit
+kubectl -n mlflow rollout restart deployment/streamlit
 ```
-
-<!-- ### Step 5：Ingress コントローラの設定確認
-```bash
-# Ingress コントローラの Pod が正常に動作しているか確認
-kubectl -n ingress-nginx get pods
-# Ingress リソースが正しく設定されているか確認
-kubectl -n default get ingress streamlit-ingress -o yaml
-# Ingress コントローラのログを確認（問題がある場合）
-kubectl -n ingress-nginx logs -l app.kubernetes.io/name=ingress-nginx
-``` -->
 
 ### Step 6：hosts に追加
 ```bash
@@ -72,4 +62,39 @@ sudo sh -c 'echo "127.0.0.1 streamlit.local" >> /etc/hosts'
 curl http://streamlit.local
 http://streamlit.local
 
+
+
+
+
+
+## トラブルシューティング
+```bash
+# 動かない場合は Pod を削除して再作成を試みる
+kubectl -n mlflow get pods -l app=streamlit
+kubectl -n mlflow delete pod <問題の-pod-name> || true
+
+
+# Ingress の状態を確認
+kubectl get ingress -A -o wide && echo '---' && kubectl -n ingress-nginx get pods -o wide
+# さらに詳細に確認したい場合
+kubectl -n mlflow get deploy,sts,po,svc,endpoints -o wide && echo '--- describe streamlit ingress ---' && kubectl -n mlflow describe ingress streamlit-ingress
+# Streamlit Pod の詳細を確認
+kubectl -n mlflow describe pod streamlit-79575fc5b6-9xzms
+
+
+# kind にローカルイメージを載せて、Deployment を再起動して Pod 状態を確認
+kind load docker-image localhost:5001/streamlit-iris:latest --name agritech-mlops && kubectl -n mlflow rollout restart deployment/streamlit && kubectl -n mlflow get pods -o wide && kubectl -n mlflow get svc,endpoints -o wide
+# ImagePullBackOff と新しく作られた Pod の詳細イベントを確認
+kubectl -n mlflow describe pod streamlit-7d86b4fbc4-j4vr2 || true && echo '---' && kubectl -n mlflow describe pod streamlit-654d4c8849-jhfln || true && echo '--- pods ---' && kubectl -n mlflow get pods -o wide
+# Deployment のコンテナ設定（imagePullPolicy）を確認
+kubectl -n mlflow get deployment streamlit -o yaml
+# imagePullPolicy を IfNotPresent に変更して再起動
+kubectl -n mlflow patch deployment streamlit -p '{"spec":{"template":{"spec":{"containers":[{"name":"streamlit","imagePullPolicy":"IfNotPresent"}]}}}}' && kubectl -n mlflow rollout restart deployment/streamlit && kubectl -n mlflow get pods -o wide && kubectl -n mlflow get svc,endpoints -o wide
+#  👉streamlit-deploy.yamlに追記
+#    imagePullPolicy: IfNotPresent
+
+# Streamlit サービスのエンドポイントを確認して curl でアクセス確認
+kubectl -n mlflow get endpoints streamlit-svc -o yaml && echo '--- curl ---' && curl -I http://streamlit.local || true
+
+```
 
