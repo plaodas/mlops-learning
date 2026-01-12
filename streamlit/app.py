@@ -45,8 +45,8 @@ if st.button("Download & Load artifact"):
         with st.spinner("Downloading artifact and loading model..."):
             local_path = s3_utils.download_and_extract_model(
                 artifact_uri,
-                aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
-                aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+                aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID", 'minio'),
+                aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY", 'minio123'),
             )
             model = s3_utils.load_model_from_path(local_path)
             st.session_state["model"] = model
