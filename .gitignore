@@ -1,3 +1,5 @@
 # Ignore generated certs for local development
 /scripts/*.pem
 .venv/
+.mypy_cache/
+__pycache__/

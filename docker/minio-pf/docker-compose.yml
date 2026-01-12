@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  minio-pf:
+    build: .
+    image: minio-pf:latest
+    container_name: minio-pf
+    restart: unless-stopped
+    # mount your kubeconfig into the container so kubectl can authenticate
+    # set KUBECONFIG env var to override if needed
+    volumes:
+      - ${KUBECONFIG:-$HOME/.kube}:/root/.kube:ro
+    network_mode: host
+    stdin_open: false
+    tty: false

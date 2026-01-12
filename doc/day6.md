@@ -19,7 +19,7 @@ Dockerfile を作成し、Streamlit アプリをコンテナ化する。
 # Docker イメージのビルド  localhost:5001 にタグを付ける
 docker build -t registry5001:5000/streamlit-iris:latest -f streamlit/Dockerfile streamlit
 docker tag registry5001:5000/streamlit-iris:latest localhost:5001/streamlit-iris:latest
-# ローカルの Docker レジストリにプッシュ
+# ローカルの Docker レジストリにプッシュ ー＞ kindにロードする場合は不要
 # docker push registry5001:5000/streamlit-iris:latest
 docker push localhost:5001/streamlit-iris:latest
 ```
@@ -51,6 +51,12 @@ kind load docker-image localhost:5001/streamlit-iris:latest --name agritech-mlop
 docker exec -it agritech-mlops-control-plane ctr -n k8s.io images ls | grep streamlit-iris || true
 # Deployment を再起動する
 kubectl -n mlflow rollout restart deployment/streamlit
+kubectl -n mlflow rollout status deployment/streamlit
+
+#  MinIO サービスへのポートフォワードを維持するための軽量コンテナを使用
+# ローカル:9000 ←→ cluster svc/minio:9000 ←→ pod:9000
+export KUBECONFIG=$HOME/.kube
+docker compose -f docker/minio-pf/docker-compose.yml up -d
 ```
 
 ### Step 6：hosts に追加
@@ -62,8 +68,18 @@ sudo sh -c 'echo "127.0.0.1 streamlit.local" >> /etc/hosts'
 curl http://streamlit.local
 http://streamlit.local
 
+![streamlit_dashboard](image_streamlit_dashboard.png)
 
 
+
+
+### app.py修正時の操作
+```bash
+docker build -t registry5001:5000/streamlit-iris:latest -f streamlit/Dockerfile streamlit
+docker tag registry5001:5000/streamlit-iris:latest localhost:5001/streamlit-iris:latest
+kind load docker-image localhost:5001/streamlit-iris:latest --name agritech-mlops
+kubectl -n mlflow rollout restart deployment/streamlit
+```
 
 
 
@@ -96,5 +112,21 @@ kubectl -n mlflow patch deployment streamlit -p '{"spec":{"template":{"spec":{"c
 # Streamlit サービスのエンドポイントを確認して curl でアクセス確認
 kubectl -n mlflow get endpoints streamlit-svc -o yaml && echo '--- curl ---' && curl -I http://streamlit.local || true
 
+
+
+# Service / Endpoints 確認:
+kubectl describe svc minio -n argo
+kubectl get endpoints minio -n argo -o yaml
+# Pod 確認:
+kubectl get pod -n argo -o wide #（対象 Pod の IP/Node 確認）
+# port-forward プロセス確認（ローカルで実行している場合）:
+ps aux | grep port-forward
+curl -I http://localhost:9000
+# NodePort 到達性確認:
+curl -I --connect-timeout 5 http://<NODE_IP>:30090
+#（失敗する場合はルーティング／ファイアウォールが原因）
+#コンテナ版 port-forward を使っているか:
+docker ps | grep minio-pf
+docker logs minio-pf
 ```
 

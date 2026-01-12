@@ -2,7 +2,7 @@ import os
 import streamlit as st
 import mlflow.pyfunc
 import pandas as pd
-from . import s3_utils
+import s3_utils
 
 st.title("Iris 推論ダッシュボード")
 
@@ -17,10 +17,18 @@ def load_registry_model():
 
 # session stored model (can be registry model or artifact-loaded model)
 if "model" not in st.session_state:
+    st.session_state["model"] = None
+
+# Provide an explicit action to load model from MLflow Model Registry
+if st.button("Load registry model"):
     try:
-        st.session_state["model"] = load_registry_model()
-    except Exception:
-        st.session_state["model"] = None
+        with st.spinner("Loading model from MLflow Model Registry..."):
+            st.session_state["model"] = load_registry_model()
+        st.success(f"Loaded registry model: {MODEL_URI}")
+    except Exception as e:
+        # keep session model as-is (likely None) and show helpful error
+        st.session_state["model"] = st.session_state.get("model")
+        st.error(f"Failed to load registry model: {e}")
 
 
 st.subheader("モデルをロード")
