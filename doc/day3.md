@@ -110,7 +110,7 @@ kubectl patch deployment argo-server -n argo --type='json' \
 kubectl rollout status deployment/argo-server -n argo
 ```
 ### argoの認証なし設定について
-[ローカル向け：Argo 認証を一時的に無効化する手順](doc/local-auth.md)
+[ローカル向け：Argo 認証を一時的に無効化する手順](./local-auth.md)
 
 
 

@@ -55,11 +55,13 @@ docker exec -it agritech-mlops-control-plane ctr -n k8s.io images ls | grep stre
 kubectl -n mlflow rollout restart deployment/streamlit
 kubectl -n mlflow rollout status deployment/streamlit
 
-#  MinIO サービスへのポートフォワードを維持するための軽量コンテナを使用
+#  MinIO サービスへのポートフォワードを維持するための軽量コンテナを起動
 # ローカル:9000 ←→ cluster svc/minio:9000 ←→ pod:9000
 export KUBECONFIG=$HOME/.kube
 docker compose -f docker/minio-pf/docker-compose.yml up -d
 ```
+- [MinIO サービスへのポートフォワードを維持するための軽量コンテナについて](../docker/minio-pf/README.md)
+
 
 ### Step 6：hosts に追加
 ```bash

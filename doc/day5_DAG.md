@@ -112,7 +112,9 @@ kubectl -n argo delete workflow mlflow-dag || true
 kubectl -n argo create -f pipelines/dag/mlflow-dag-workflow.yaml
 
 ```
+[👆のパッチを当てた charts/minioについて](../charts/minio/README.md)
 
+---
 
 ![argo ワークフロー 終了](image_argo_mlflow_dag.png)
 ![mlflow model](image_mlflow_dag.png)
