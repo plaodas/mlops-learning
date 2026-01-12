@@ -73,10 +73,11 @@ curl http://streamlit.local
 http://streamlit.local
 
 ![streamlit_dashboard](image_streamlit_dashboard.png)
+![streamlit_dashboard_inference](image_streamlit_dashboard_inference.png)
 
+---
 
-
-### app.py修正時の操作
+## app.py修正時の再デプロイ手順
 ```bash
 docker build -t registry5001:5000/streamlit-iris:latest -f streamlit/Dockerfile streamlit
 docker tag registry5001:5000/streamlit-iris:latest localhost:5001/streamlit-iris:latest
