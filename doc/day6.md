@@ -70,6 +70,7 @@ sudo sh -c 'echo "127.0.0.1 streamlit.local" >> /etc/hosts'
 
 ### Step 7：アクセス！
 curl http://streamlit.local
+
 http://streamlit.local
 
 ![streamlit_dashboard](image_streamlit_dashboard.png)
