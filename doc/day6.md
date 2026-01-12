@@ -12,6 +12,8 @@ http://streamlit.local
 
 ### Step 1：Streamlit アプリを作る
 app.py を作成
+s3_utils.py (s3バケット操作用ユーティリティ)を作成
+
 
 ### Step 2：Dockerfile を作成
 Dockerfile を作成し、Streamlit アプリをコンテナ化する。
