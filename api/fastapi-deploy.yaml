@@ -19,3 +19,16 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
+        env:
+        - name: MLFLOW_TRACKING_URI
+          value: "http://mlflow-svc:5000"
+        - name: MLFLOW_REGISTRY_URI
+          value: "http://mlflow-svc:5000"
+        - name: AWS_ACCESS_KEY_ID
+          value: "minio"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "minio123"
+        - name: MLFLOW_S3_ENDPOINT_URL
+          value: "http://minio.argo.svc.cluster.local:9000"
+        - name: MLFLOW_S3_IGNORE_TLS
+          value: "true"

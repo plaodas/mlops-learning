@@ -46,6 +46,22 @@ kubectl -n mlflow rollout status deployment/fastapi
 
 
 
+### Step 5：FastAPI アプリの修正と再デプロイ
+```bash
+docker build -t registry5001:5000/fastapi-iris:latest -f api/Dockerfile api
+docker tag registry5001:5000/fastapi-iris:latest localhost:5001/fastapi-iris:latest
+kind load docker-image localhost:5001/fastapi-iris:latest --name agritech-mlops
+kubectl -n mlflow rollout restart deployment/fastapi
+kubectl -n mlflow rollout status deployment/fastapi
+```
+
+
+### Step 6：FastAPI アプリにアクセスして推論を試す
+```bash
+curl -X POST http://api.local/predict \
+  -H "Content-Type: application/json" \
+  -d '{"sepal length (cm)":5.1,"sepal width (cm)":3.5,"petal length (cm)":1.4,"petal width (cm)":0.2}'
+```
 
 
 ## トラブルシューティング
@@ -85,9 +101,26 @@ kubectl -n mlflow rollout restart deployment/fastapi; kubectl -n mlflow rollout 
 # => OK
 ```
 
+### モデルの artifact 内容を確認したい
+```bash
+# FastAPI Pod 内でモデルのartifact URIを表示
+kubectl -n mlflow exec <fastapi-pod> -- python -c "from mlflow.tracking import MlflowClient; print(MlflowClient().get_model_version_download_uri('argo-dag-demo','3'))"
+
+# artifact をダウンロードして中身確認（Pod内で実行）
+kubectl -n mlflow exec <fastapi-pod> -- python - <<'PY'
+import mlflow, tempfile, os
+uri='runs:/c2e73817ec0f4f8ca1fec40de72bdee0/model'
+dst=tempfile.mkdtemp()
+print('dst',dst)
+p=mlflow.artifacts.download_artifacts(uri, dst_path=dst)
+for r,d,f in os.walk(dst):
+    print(r, d, f)
+PY
+
+```
 
 
-## 使うモデル models:/argo-dag-demo/1 を MLflow に登録
+## 使うモデル models:/argo-dag-demo/<Version> を MLflow に登録
 ```bash
 # 手動でバックグラウンド起動（ログを /tmp/mlflow-pf.log に保存）
 nohup kubectl -n mlflow port-forward svc/mlflow-svc 5005:5000 --address 127.0.0.1 > /tmp/mlflow-pf.log 2>&1 & echo $!
