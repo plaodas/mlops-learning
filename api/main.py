@@ -10,7 +10,9 @@ import joblib
 
 app = FastAPI()
 
-MODEL_URI = "models:/argo-dag-demo/3"  # 後で自動化もできる
+MODEL_URI = "models:/argo-dag-demo/4"  # 後で自動化もできる
+
+logging.basicConfig(level=logging.INFO)
 
 
 class _RawModelWrapper:
@@ -22,7 +24,7 @@ class _RawModelWrapper:
         return self._model.predict(df)
 
 
-# モデルをロード（起動時に1回だけ）。見つからなければアプリは停止させずに503を返す。
+# モデルをロード（起動時に1回だけ）。見つからなければpickleロードのフォールバックを試みる。
 def _load_model_with_fallback(model_uri: str):
     try:
         return mlflow.pyfunc.load_model(model_uri)
@@ -62,12 +64,28 @@ def _load_model_with_fallback(model_uri: str):
 
     return None
 
+# Model will be loaded on startup to avoid blocking import time
+model = None
+# simple in-memory cache for loaded models keyed by models:/... uri or version
+model_cache = {}
 
-model = _load_model_with_fallback(MODEL_URI)
 
+@app.on_event("startup")
+def _startup_load_model():
+    global model
+    logging.info("Startup: loading model %s", MODEL_URI)
+    model = _load_model_with_fallback(MODEL_URI)
+    if model is not None:
+        model_cache[MODEL_URI] = model
+    if model is None:
+        logging.error("Model failed to load during startup: %s", MODEL_URI)
+    else:
+        logging.info("Model loaded successfully")
 
+# 推論エンドポイント
 @app.post("/predict")
 def predict(features: dict):
+    """Predict using the startup-loaded default model."""
     if model is None:
         raise HTTPException(status_code=503, detail="Model not available")
     df = pd.DataFrame([features])
@@ -75,6 +93,34 @@ def predict(features: dict):
     return {"prediction": int(pred)}
 
 
+@app.post("/predict/{version}")
+def predict_version(version: str, features: dict):
+    """Predict using a specific model version.
+
+    Example: POST /predict/1 with JSON body of features.
+    The endpoint will try to load `models:/argo-dag-demo/{version}` and cache it.
+    """
+    model_uri = f"models:/argo-dag-demo/{version}"
+
+    # try cache first
+    m = model_cache.get(model_uri)
+    if m is None:
+        logging.info("Loading model for uri=%s", model_uri)
+        m = _load_model_with_fallback(model_uri)
+        if m is None:
+            raise HTTPException(status_code=503, detail=f"Model version {version} not available")
+        model_cache[model_uri] = m
+
+    df = pd.DataFrame([features])
+    pred = model_cache[model_uri].predict(df)[0]
+    return {"prediction": int(pred)}
+
+
 @app.get("/")
 def read_root():
     return {"message": "FastAPI is running. Use /predict endpoint to get predictions."}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "model_loaded": model is not None}

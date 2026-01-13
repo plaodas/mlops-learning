@@ -26,7 +26,13 @@ acc = accuracy_score(y, preds)
 
 with mlflow.start_run() as run:
     mlflow.log_metric("accuracy", acc)
-    mlflow.log_artifact("/inputs/model.pkl", artifact_path="model")
+    # Save model in MLflow format so an MLmodel metadata file is created
+    try:
+        import mlflow.sklearn
+        mlflow.sklearn.log_model(model, artifact_path="model")
+    except Exception:
+        # If structured logging fails, fall back to raw artifact upload to avoid breaking pipeline
+        mlflow.log_artifact("/inputs/model.pkl", artifact_path="model")
 
     client = MlflowClient()
     model_uri = f"runs:/{run.info.run_id}/model"

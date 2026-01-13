@@ -35,6 +35,9 @@ spec:
     container:
       image: localhost:5001/mlflow-dag:latest
       imagePullPolicy: IfNotPresent
+      env:
+      - name: MLFLOW_TRACKING_URI
+        value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
       command: ["/bin/sh", "-c", "mkdir -p /outputs && python /preprocess.py"]
     outputs:
       artifacts:
@@ -49,6 +52,9 @@ spec:
     container:
       image: localhost:5001/mlflow-dag:latest
       imagePullPolicy: IfNotPresent
+      env:
+      - name: MLFLOW_TRACKING_URI
+        value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
       command: ["/bin/sh", "-c", "mkdir -p /outputs && python /train.py"]
     outputs:
       artifacts:
@@ -65,5 +71,8 @@ spec:
     container:
       image: localhost:5001/mlflow-dag:latest
       imagePullPolicy: IfNotPresent
+      env:
+      - name: MLFLOW_TRACKING_URI
+        value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
       command: ["/bin/sh", "-c", "mkdir -p /outputs && python /evaluate.py"]
 

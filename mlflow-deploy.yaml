@@ -1,5 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-pvc
+  namespace: mlflow
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: mlflow
   namespace: mlflow
@@ -16,7 +30,28 @@ spec:
       containers:
       - name: mlflow
         image: ghcr.io/mlflow/mlflow:latest
-        # TODO: --allowed-hosts と --cors-allowed-origins を追加しようね
-        args: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000", "--allowed-hosts", "*", "--cors-allowed-origins", "http://localhost:3000,https://example.com"]
+        # backend/artifact を PVC に保存する（開発向け簡易設定）
+        args:
+          - "mlflow"
+          - "server"
+          - "--host"
+          - "0.0.0.0"
+          - "--port"
+          - "5000"
+          - "--backend-store-uri"
+          - "sqlite:////mlflow/mlflow.db"
+          - "--default-artifact-root"
+          - "file:///mlflow/mlruns"
+          - "--allowed-hosts"
+          - "*"
+          - "--cors-allowed-origins"
+          - "http://localhost:3000,https://example.com"
         ports:
-        - containerPort: 5000
+          - containerPort: 5000
+        volumeMounts:
+          - name: mlflow-data
+            mountPath: /mlflow
+      volumes:
+        - name: mlflow-data
+          persistentVolumeClaim:
+            claimName: mlflow-pvc
