@@ -78,15 +78,36 @@ curl http://nginx.local
 # Create mlflow namespace
 kubectl create namespace mlflow
 
+# build and push (expects local registry at localhost:5001)
+bash scripts/build_mlflow_image.sh
+
+# or load into kind (if no registry)
+docker build -t registry5001:5000/mlflow:with-boto3 -f docker/mlflow/Dockerfile .
+docker tag registry5001:5000/mlflow:with-boto3 localhost:5001/mlflow:with-boto3
+kind load docker-image localhost:5001/mlflow:with-boto3 --name agritech-mlops
+# then update mlflow-deploy.yaml image to mlflow:with-boto3 (or localhost:5001/...) and kubectl apply
+
+
 kubectl apply -f mlflow-deploy.yaml
 kubectl apply -f mlflow-svc.yaml
 kubectl apply -f mlflow-ingress.yaml
 kubectl get pods -n mlflow
 curl http://mlflow.local
+
 ```
 ブラウザで確認
 http://mlflow.local
 
+
+## MLflow デプロイの更新手順
+```bash
+kubectl -n mlflow apply -f mlflow-deploy.yaml
+kubectl -n mlflow rollout restart deployment/mlflow
+kubectl -n mlflow rollout status deployment/mlflow
+
+# 確認コマンド
+ bash -lc "kubectl -n mlflow get pods -o wide; kubectl -n mlflow get rs -o wide; kubectl -n mlflow describe deployment/mlflow; for p in $(kubectl -n mlflow get pods -l app=mlflow -o jsonpath='{.items[*].metadata.name}'); do echo; echo '===== POD:' $p '====='; kubectl -n mlflow describe pod $p; echo '----- last 200 log lines for' $p '-----'; kubectl -n mlflow logs $p --tail=200 || true; done; echo; echo '=== Recent events ==='; kubectl -n mlflow get events --sort-by=.metadata.creationTimestamp | tail -n 50"
+```
 
 ## Argo Workflows のデプロイ
 ```bash

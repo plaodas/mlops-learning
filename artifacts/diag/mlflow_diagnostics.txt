@@ -1,0 +1,476 @@
+== kubectl get pods -o wide ==
+NAME                         READY   STATUS             RESTARTS        AGE     IP            NODE                           NOMINATED NODE   READINESS GATES
+fastapi-5b6c7fdb8-lgc52      1/1     Running            0               82m     10.244.0.70   agritech-mlops-control-plane   <none>           <none>
+mlflow-5bf8d4c88f-v6sjp      1/1     Running            0               15m     10.244.0.75   agritech-mlops-control-plane   <none>           <none>
+mlflow-79bf4898c6-cw9rt      0/1     ImagePullBackOff   0               6m50s   10.244.0.76   agritech-mlops-control-plane   <none>           <none>
+streamlit-5495dc75f5-7sh78   1/1     Running            1 (6h34m ago)   29h     10.244.0.13   agritech-mlops-control-plane   <none>           <none>
+
+== kubectl get rs -o wide ==
+NAME                   DESIRED   CURRENT   READY   AGE     CONTAINERS   IMAGES                                 SELECTOR
+fastapi-5b6c7fdb8      1         1         1       82m     fastapi      localhost:5001/fastapi-iris:latest     app=fastapi,pod-template-hash=5b6c7fdb8
+fastapi-747844676f     0         0         0       91m     fastapi      localhost:5001/fastapi-iris:latest     app=fastapi,pod-template-hash=747844676f
+fastapi-794dcd8449     0         0         0       83m     fastapi      localhost:5001/fastapi-iris:latest     app=fastapi,pod-template-hash=794dcd8449
+mlflow-548675fc8b      0         0         0       43m     mlflow       ghcr.io/mlflow/mlflow:latest           app=mlflow,pod-template-hash=548675fc8b
+mlflow-56c56fbfc7      0         0         0       4h52m   mlflow       ghcr.io/mlflow/mlflow:latest           app=mlflow,pod-template-hash=56c56fbfc7
+mlflow-59968bb495      0         0         0       2d13h   mlflow       ghcr.io/mlflow/mlflow:latest           app=mlflow,pod-template-hash=59968bb495
+mlflow-5bf8d4c88f      1         1         1       15m     mlflow       ghcr.io/mlflow/mlflow:latest           app=mlflow,pod-template-hash=5bf8d4c88f
+mlflow-75f47d85b7      0         0         0       6h20m   mlflow       ghcr.io/mlflow/mlflow:latest           app=mlflow,pod-template-hash=75f47d85b7
+mlflow-79bf4898c6      1         1         0       6m50s   mlflow       localhost:5001/mlflow:with-boto3       app=mlflow,pod-template-hash=79bf4898c6
+mlflow-8454989486      0         0         0       6h20m   mlflow       ghcr.io/mlflow/mlflow:latest           app=mlflow,pod-template-hash=8454989486
+mlflow-88f7b9d64       0         0         0       4h52m   mlflow       ghcr.io/mlflow/mlflow:latest           app=mlflow,pod-template-hash=88f7b9d64
+streamlit-5495dc75f5   1         1         1       29h     streamlit    localhost:5001/streamlit-iris:latest   app=streamlit,pod-template-hash=5495dc75f5
+
+== deployment describe ==
+Name:                   mlflow
+Namespace:              mlflow
+CreationTimestamp:      Sun, 11 Jan 2026 00:11:37 +0900
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 12
+Selector:               app=mlflow
+Replicas:               1 desired | 1 updated | 2 total | 1 available | 1 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:       app=mlflow
+  Annotations:  kubectl.kubernetes.io/restartedAt: 2026-01-13T16:49:08+09:00
+  Containers:
+   mlflow:
+    Image:      localhost:5001/mlflow:with-boto3
+    Port:       5000/TCP
+    Host Port:  0/TCP
+    Args:
+      mlflow
+      server
+      --host
+      0.0.0.0
+      --port
+      5000
+      --backend-store-uri
+      sqlite:////mlflow/mlflow.db
+      --default-artifact-root
+      s3://argo-artifacts
+      --allowed-hosts
+      *
+      --cors-allowed-origins
+      http://localhost:3000,https://example.com
+    Environment:
+      AWS_ACCESS_KEY_ID:       <set to the key 'accesskey' in secret 'minio-cred'>  Optional: false
+      AWS_SECRET_ACCESS_KEY:   <set to the key 'secretkey' in secret 'minio-cred'>  Optional: false
+      MLFLOW_S3_ENDPOINT_URL:  http://minio.argo.svc.cluster.local:9000
+      AWS_REGION:              us-east-1
+    Mounts:
+      /mlflow from mlflow-data (rw)
+  Volumes:
+   mlflow-data:
+    Type:          PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:     mlflow-pvc
+    ReadOnly:      false
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    ReplicaSetUpdated
+OldReplicaSets:  mlflow-59968bb495 (0/0 replicas created), mlflow-75f47d85b7 (0/0 replicas created), mlflow-8454989486 (0/0 replicas created), mlflow-56c56fbfc7 (0/0 replicas created), mlflow-88f7b9d64 (0/0 replicas created), mlflow-548675fc8b (0/0 replicas created), mlflow-5bf8d4c88f (1/1 replicas created)
+NewReplicaSet:   mlflow-79bf4898c6 (1/1 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  43m    deployment-controller  Scaled up replica set mlflow-548675fc8b to 1
+  Normal  ScalingReplicaSet  43m    deployment-controller  Scaled down replica set mlflow-88f7b9d64 to 0 from 1
+  Normal  ScalingReplicaSet  15m    deployment-controller  Scaled up replica set mlflow-5bf8d4c88f to 1
+  Normal  ScalingReplicaSet  15m    deployment-controller  Scaled down replica set mlflow-548675fc8b to 0 from 1
+  Normal  ScalingReplicaSet  6m50s  deployment-controller  Scaled up replica set mlflow-79bf4898c6 to 1
+
+== per-pod describe and logs ==
+
+----- POD: mlflow-5bf8d4c88f-v6sjp -----
+Name:             mlflow-5bf8d4c88f-v6sjp
+Namespace:        mlflow
+Priority:         0
+Service Account:  default
+Node:             agritech-mlops-control-plane/172.20.0.2
+Start Time:       Tue, 13 Jan 2026 21:25:51 +0900
+Labels:           app=mlflow
+                  pod-template-hash=5bf8d4c88f
+Annotations:      kubectl.kubernetes.io/restartedAt: 2026-01-13T16:49:08+09:00
+Status:           Running
+IP:               10.244.0.75
+IPs:
+  IP:           10.244.0.75
+Controlled By:  ReplicaSet/mlflow-5bf8d4c88f
+Containers:
+  mlflow:
+    Container ID:  containerd://5d81d3d4353a8cfcba107f50a0058a9f6367c6b699e1f76eadf7bd0d0fe57f21
+    Image:         ghcr.io/mlflow/mlflow:latest
+    Image ID:      ghcr.io/mlflow/mlflow@sha256:5febd45fd8956b869a63d080bd39a0ba4ea54cec5b1cd52c147438bf3b5cf203
+    Port:          5000/TCP
+    Host Port:     0/TCP
+    Command:
+      sh
+      -c
+    Args:
+      pip install --no-cache-dir boto3 botocore && \
+      exec mlflow server --host 0.0.0.0 --port 5000 \
+        --backend-store-uri sqlite:////mlflow/mlflow.db \
+        --default-artifact-root s3://argo-artifacts \
+        --allowed-hosts '*' \
+        --cors-allowed-origins 'http://localhost:3000,https://example.com'
+      
+    State:          Running
+      Started:      Tue, 13 Jan 2026 21:25:52 +0900
+    Ready:          True
+    Restart Count:  0
+    Environment:
+      AWS_ACCESS_KEY_ID:       <set to the key 'accesskey' in secret 'minio-cred'>  Optional: false
+      AWS_SECRET_ACCESS_KEY:   <set to the key 'secretkey' in secret 'minio-cred'>  Optional: false
+      MLFLOW_S3_ENDPOINT_URL:  http://minio.argo.svc.cluster.local:9000
+      AWS_REGION:              us-east-1
+    Mounts:
+      /mlflow from mlflow-data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7c9k9 (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  mlflow-data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  mlflow-pvc
+    ReadOnly:   false
+  kube-api-access-7c9k9:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  15m   default-scheduler  Successfully assigned mlflow/mlflow-5bf8d4c88f-v6sjp to agritech-mlops-control-plane
+  Normal  Pulling    15m   kubelet            Pulling image "ghcr.io/mlflow/mlflow:latest"
+  Normal  Pulled     15m   kubelet            Successfully pulled image "ghcr.io/mlflow/mlflow:latest" in 743.38796ms (743.400664ms including waiting)
+  Normal  Created    15m   kubelet            Created container mlflow
+  Normal  Started    15m   kubelet            Started container mlflow
+----- logs: mlflow-5bf8d4c88f-v6sjp -----
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.10/site-packages (from python-dateutil<3.0.0,>=2.1->botocore) (1.17.0)
+Installing collected packages: jmespath, botocore, s3transfer, boto3
+Successfully installed boto3-1.42.26 botocore-1.42.26 jmespath-1.0.1 s3transfer-0.16.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+[notice] A new release of pip is available: 23.0.1 -> 25.3
+[notice] To update, run: pip install --upgrade pip
+WARNING: Accepting ALL hosts. This may leave the server vulnerable to DNS rebinding attacks.
+Registry store URI not provided. Using backend store URI.
+2026/01/13 12:25:58 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:25:58 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:25:58 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:25:58 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+2026/01/13 12:25:58 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:25:58 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+2026/01/13 12:25:58 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:25:58 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:25:58 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:25:58 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+[MLflow] Security middleware enabled. Allowed hosts: *. CORS origins: http://localhost:3000, https://example.com.
+INFO:     Uvicorn running on http://0.0.0.0:5000 (Press CTRL+C to quit)
+INFO:     Started parent process [20]
+INFO:     Started server process [25]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Started server process [24]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Started server process [23]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Started server process [22]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2026/01/13 12:26:07 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:26:07 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:26:07 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:26:07 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:42144 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+2026/01/13 12:26:07 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:26:07 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:26:07 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:26:07 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+2026/01/13 12:26:07 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:26:07 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:42144 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:42152 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:42152 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+2026/01/13 12:26:27 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:26:27 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:26:27 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:26:27 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:38762 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+2026/01/13 12:26:27 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:26:27 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:26:27 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:26:27 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+2026/01/13 12:26:27 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:26:27 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:38762 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56016 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56016 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:39390 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:39390 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53840 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53840 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:51816 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:51816 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60538 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60538 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:45788 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:45788 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:39748 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:39748 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:43364 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:43364 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:35554 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:35554 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:37944 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:37944 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:47444 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:47444 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36310 - "GET /api/2.0/mlflow/model-versions/search?filter=name%3D%27argo-dag-demo%27&max_results=10000 HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36310 - "GET /api/2.0/mlflow/registered-models/get?name=argo-dag-demo HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36310 - "GET /api/2.0/mlflow/model-versions/get-download-uri?name=argo-dag-demo&version=15 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:39452 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:39452 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53878 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53878 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:49726 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:49726 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.3:60552 - "POST /api/2.0/mlflow/experiments/get-by-name HTTP/1.1" 405 Method Not Allowed
+INFO:     10.244.0.2:41516 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:41516 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:33688 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:33688 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:58156 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:58156 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:42000 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:42000 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:55336 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:55336 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53200 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53200 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:43258 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:43258 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:50366 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:50366 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:47334 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:47334 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:51300 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:51300 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:36594 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:36594 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60198 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60198 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:41114 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:41114 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:33924 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:33924 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:33928 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:33928 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+2026/01/13 12:31:28 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:31:28 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:31:28 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:31:28 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:44182 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+2026/01/13 12:31:28 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:31:28 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:31:28 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:31:28 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+2026/01/13 12:31:28 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:31:28 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:44182 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:59534 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:59534 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56150 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56150 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:40746 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:40746 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:52282 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:52282 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:54632 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:54632 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56102 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56102 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:59240 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:59240 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:51536 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:51536 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:41286 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:41286 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:35200 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:35200 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+2026/01/13 12:33:17 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:33:17 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:33:17 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:33:17 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:35914 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+2026/01/13 12:33:17 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/01/13 12:33:17 INFO mlflow.store.db.utils: Updating database tables
+2026/01/13 12:33:17 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:33:17 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+2026/01/13 12:33:17 INFO alembic.runtime.migration: Context impl SQLiteImpl.
+2026/01/13 12:33:17 INFO alembic.runtime.migration: Will assume non-transactional DDL.
+INFO:     10.244.0.2:35914 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60978 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60978 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:59542 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:59542 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:45288 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:45288 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.3:52952 - "POST /api/2.0/mlflow/experiments/get-by-name HTTP/1.1" 405 Method Not Allowed
+INFO:     10.244.0.2:46904 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:46904 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:41982 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:41982 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:48218 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:48218 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56914 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:56914 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:46714 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:46714 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:35444 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:35444 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:52880 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:52880 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:58412 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:58412 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:44880 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:44880 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:54708 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:54708 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53596 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:53596 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60458 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:60458 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:52096 - "GET /ajax-api/2.0/mlflow/model-versions/get?name=argo-dag-demo&version=21 HTTP/1.1" 200 OK
+INFO:     10.244.0.2:52096 - "GET /ajax-api/2.0/mlflow/runs/get?run_id=99f70bc2687f4f1cb69612e026f9fc76 HTTP/1.1" 200 OK
+INFO:     10.244.0.3:55098 - "POST /api/2.0/mlflow/experiments/get-by-name HTTP/1.1" 405 Method Not Allowed
+
+----- POD: mlflow-79bf4898c6-cw9rt -----
+Name:             mlflow-79bf4898c6-cw9rt
+Namespace:        mlflow
+Priority:         0
+Service Account:  default
+Node:             agritech-mlops-control-plane/172.20.0.2
+Start Time:       Tue, 13 Jan 2026 21:34:28 +0900
+Labels:           app=mlflow
+                  pod-template-hash=79bf4898c6
+Annotations:      kubectl.kubernetes.io/restartedAt: 2026-01-13T16:49:08+09:00
+Status:           Pending
+IP:               10.244.0.76
+IPs:
+  IP:           10.244.0.76
+Controlled By:  ReplicaSet/mlflow-79bf4898c6
+Containers:
+  mlflow:
+    Container ID:  
+    Image:         localhost:5001/mlflow:with-boto3
+    Image ID:      
+    Port:          5000/TCP
+    Host Port:     0/TCP
+    Args:
+      mlflow
+      server
+      --host
+      0.0.0.0
+      --port
+      5000
+      --backend-store-uri
+      sqlite:////mlflow/mlflow.db
+      --default-artifact-root
+      s3://argo-artifacts
+      --allowed-hosts
+      *
+      --cors-allowed-origins
+      http://localhost:3000,https://example.com
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      AWS_ACCESS_KEY_ID:       <set to the key 'accesskey' in secret 'minio-cred'>  Optional: false
+      AWS_SECRET_ACCESS_KEY:   <set to the key 'secretkey' in secret 'minio-cred'>  Optional: false
+      MLFLOW_S3_ENDPOINT_URL:  http://minio.argo.svc.cluster.local:9000
+      AWS_REGION:              us-east-1
+    Mounts:
+      /mlflow from mlflow-data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8m4dg (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  mlflow-data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  mlflow-pvc
+    ReadOnly:   false
+  kube-api-access-8m4dg:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                    From               Message
+  ----     ------     ----                   ----               -------
+  Normal   Scheduled  6m50s                  default-scheduler  Successfully assigned mlflow/mlflow-79bf4898c6-cw9rt to agritech-mlops-control-plane
+  Normal   Pulling    5m11s (x4 over 6m51s)  kubelet            Pulling image "localhost:5001/mlflow:with-boto3"
+  Warning  Failed     5m11s (x4 over 6m51s)  kubelet            Failed to pull image "localhost:5001/mlflow:with-boto3": rpc error: code = Unknown desc = failed to pull and unpack image "localhost:5001/mlflow:with-boto3": failed to resolve reference "localhost:5001/mlflow:with-boto3": failed to do request: Head "http://localhost:5001/v2/mlflow/manifests/with-boto3": dial tcp [::1]:5001: connect: connection refused
+  Warning  Failed     5m11s (x4 over 6m51s)  kubelet            Error: ErrImagePull
+  Warning  Failed     4m57s (x6 over 6m50s)  kubelet            Error: ImagePullBackOff
+  Normal   BackOff    96s (x19 over 6m50s)   kubelet            Back-off pulling image "localhost:5001/mlflow:with-boto3"
+----- logs: mlflow-79bf4898c6-cw9rt -----
+Error from server (BadRequest): container "mlflow" in pod "mlflow-79bf4898c6-cw9rt" is waiting to start: trying and failing to pull image
+
+== events ==
+LAST SEEN   TYPE      REASON              OBJECT                         MESSAGE
+43m         Normal    SuccessfulCreate    replicaset/mlflow-548675fc8b   Created pod: mlflow-548675fc8b-sx7bq
+43m         Normal    ScalingReplicaSet   deployment/mlflow              Scaled up replica set mlflow-548675fc8b to 1
+43m         Normal    Scheduled           pod/mlflow-548675fc8b-sx7bq    Successfully assigned mlflow/mlflow-548675fc8b-sx7bq to agritech-mlops-control-plane
+43m         Normal    Pulling             pod/mlflow-548675fc8b-sx7bq    Pulling image "ghcr.io/mlflow/mlflow:latest"
+43m         Normal    Pulled              pod/mlflow-548675fc8b-sx7bq    Successfully pulled image "ghcr.io/mlflow/mlflow:latest" in 739.841471ms (739.868826ms including waiting)
+43m         Normal    Created             pod/mlflow-548675fc8b-sx7bq    Created container mlflow
+43m         Normal    ScalingReplicaSet   deployment/mlflow              Scaled down replica set mlflow-88f7b9d64 to 0 from 1
+43m         Normal    Killing             pod/mlflow-88f7b9d64-h79dm     Stopping container mlflow
+43m         Normal    Started             pod/mlflow-548675fc8b-sx7bq    Started container mlflow
+43m         Normal    SuccessfulDelete    replicaset/mlflow-88f7b9d64    Deleted pod: mlflow-88f7b9d64-h79dm
+15m         Normal    ScalingReplicaSet   deployment/mlflow              Scaled up replica set mlflow-5bf8d4c88f to 1
+15m         Normal    Scheduled           pod/mlflow-5bf8d4c88f-v6sjp    Successfully assigned mlflow/mlflow-5bf8d4c88f-v6sjp to agritech-mlops-control-plane
+15m         Normal    SuccessfulCreate    replicaset/mlflow-5bf8d4c88f   Created pod: mlflow-5bf8d4c88f-v6sjp
+15m         Normal    Pulling             pod/mlflow-5bf8d4c88f-v6sjp    Pulling image "ghcr.io/mlflow/mlflow:latest"
+15m         Normal    Pulled              pod/mlflow-5bf8d4c88f-v6sjp    Successfully pulled image "ghcr.io/mlflow/mlflow:latest" in 743.38796ms (743.400664ms including waiting)
+15m         Normal    Created             pod/mlflow-5bf8d4c88f-v6sjp    Created container mlflow
+15m         Normal    SuccessfulDelete    replicaset/mlflow-548675fc8b   Deleted pod: mlflow-548675fc8b-sx7bq
+15m         Normal    Started             pod/mlflow-5bf8d4c88f-v6sjp    Started container mlflow
+15m         Normal    Killing             pod/mlflow-548675fc8b-sx7bq    Stopping container mlflow
+15m         Normal    ScalingReplicaSet   deployment/mlflow              Scaled down replica set mlflow-548675fc8b to 0 from 1
+5m11s       Warning   Failed              pod/mlflow-79bf4898c6-cw9rt    Error: ErrImagePull
+6m51s       Normal    SuccessfulCreate    replicaset/mlflow-79bf4898c6   Created pod: mlflow-79bf4898c6-cw9rt
+5m11s       Warning   Failed              pod/mlflow-79bf4898c6-cw9rt    Failed to pull image "localhost:5001/mlflow:with-boto3": rpc error: code = Unknown desc = failed to pull and unpack image "localhost:5001/mlflow:with-boto3": failed to resolve reference "localhost:5001/mlflow:with-boto3": failed to do request: Head "http://localhost:5001/v2/mlflow/manifests/with-boto3": dial tcp [::1]:5001: connect: connection refused
+5m11s       Normal    Pulling             pod/mlflow-79bf4898c6-cw9rt    Pulling image "localhost:5001/mlflow:with-boto3"
+6m50s       Normal    Scheduled           pod/mlflow-79bf4898c6-cw9rt    Successfully assigned mlflow/mlflow-79bf4898c6-cw9rt to agritech-mlops-control-plane
+6m51s       Normal    ScalingReplicaSet   deployment/mlflow              Scaled up replica set mlflow-79bf4898c6 to 1
+96s         Normal    BackOff             pod/mlflow-79bf4898c6-cw9rt    Back-off pulling image "localhost:5001/mlflow:with-boto3"
+4m57s       Warning   Failed              pod/mlflow-79bf4898c6-cw9rt    Error: ImagePullBackOff

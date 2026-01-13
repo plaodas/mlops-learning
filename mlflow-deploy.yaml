@@ -13,7 +13,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mlflow-minio-cred
+  name: minio-cred
   namespace: mlflow
 stringData:
   accesskey: "minio"
@@ -37,8 +37,11 @@ spec:
     spec:
       containers:
       - name: mlflow
-        image: ghcr.io/mlflow/mlflow:latest
-        # backend/artifact を MinIO (S3互換) に保存する設定
+        # Use a prebuilt image with boto3/botocore installed for reliable S3 access.
+        # Build with: scripts/build_mlflow_image.sh -> localhost:5001/mlflow:with-boto3
+        image: localhost:5001/mlflow:with-boto3
+        imagePullPolicy: IfNotPresent
+        # Run the mlflow server directly (no runtime pip install)
         args:
           - "mlflow"
           - "server"
@@ -58,12 +61,12 @@ spec:
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
-                name: mlflow-minio-cred
+                name: minio-cred
                 key: accesskey
           - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                name: mlflow-minio-cred
+                name: minio-cred
                 key: secretkey
           - name: MLFLOW_S3_ENDPOINT_URL
             value: "http://minio.argo.svc.cluster.local:9000"

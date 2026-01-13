@@ -39,9 +39,15 @@ spec:
       - name: MLFLOW_TRACKING_URI
         value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
       - name: AWS_ACCESS_KEY_ID
-        value: "minio"
+        valueFrom:
+          secretKeyRef:
+            name: minio-cred
+            key: accesskey
       - name: AWS_SECRET_ACCESS_KEY
-        value: "minio123"
+        valueFrom:
+          secretKeyRef:
+            name: minio-cred
+            key: secretkey
       - name: MLFLOW_S3_ENDPOINT_URL
         value: "http://minio.argo.svc.cluster.local:9000"
       - name: MLFLOW_S3_IGNORE_TLS
@@ -66,9 +72,15 @@ spec:
       - name: MLFLOW_TRACKING_URI
         value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
       - name: AWS_ACCESS_KEY_ID
-        value: "minio"
+        valueFrom:
+          secretKeyRef:
+            name: minio-cred
+            key: accesskey
       - name: AWS_SECRET_ACCESS_KEY
-        value: "minio123"
+        valueFrom:
+          secretKeyRef:
+            name: minio-cred
+            key: secretkey
       - name: MLFLOW_S3_ENDPOINT_URL
         value: "http://minio.argo.svc.cluster.local:9000"
       - name: MLFLOW_S3_IGNORE_TLS
@@ -95,9 +107,15 @@ spec:
       - name: MLFLOW_TRACKING_URI
         value: "http://mlflow-svc.mlflow.svc.cluster.local:5000"
       - name: AWS_ACCESS_KEY_ID
-        value: "minio"
+        valueFrom:
+          secretKeyRef:
+            name: minio-cred
+            key: accesskey
       - name: AWS_SECRET_ACCESS_KEY
-        value: "minio123"
+        valueFrom:
+          secretKeyRef:
+            name: minio-cred
+            key: secretkey
       - name: MLFLOW_S3_ENDPOINT_URL
         value: "http://minio.argo.svc.cluster.local:9000"
       - name: MLFLOW_S3_IGNORE_TLS

@@ -1,0 +1,255 @@
+INFO:     10.244.0.1:38058 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38064 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38066 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44712 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44730 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44728 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:40422 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:40436 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:40450 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:60860 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:60866 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:60864 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33094 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33098 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33100 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58236 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58244 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58260 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:32970 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:32980 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:32978 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36138 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36152 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36150 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:47670 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:47680 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:47694 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33764 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33768 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33770 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33550 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33562 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33560 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:48996 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49002 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49004 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:39994 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:40002 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:40014 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49234 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49240 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49236 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44804 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44806 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44808 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:34360 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:34364 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:34366 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49614 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49620 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49618 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53922 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53932 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53930 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:39262 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:39278 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:39280 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:54658 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:54666 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:54664 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52920 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52936 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52944 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:34174 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:34184 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:34182 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:46120 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:46136 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:46146 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:35146 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:35158 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:35172 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:35264 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:35278 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:35276 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:41556 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:41574 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:41572 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:32998 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33012 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:33010 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:54542 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:54560 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:54552 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51376 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51386 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51388 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55418 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55424 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55426 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51526 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51538 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51536 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58720 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58726 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58728 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:57832 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:57834 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:57836 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:41952 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:41956 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:41958 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:57032 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:57046 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:57044 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38668 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38676 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38674 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:60174 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:60190 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:60192 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:48416 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:48420 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:48422 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36896 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36910 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:36908 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58298 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58310 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:58308 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55558 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55560 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55562 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55014 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55020 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:55018 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:42370 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:42376 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:42372 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52786 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52802 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52800 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38086 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38088 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:38090 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53468 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53472 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53470 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:43462 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:43480 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:43478 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45446 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45450 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45452 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51172 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51186 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:51184 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44202 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44212 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:44210 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53116 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53134 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:53132 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45464 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45478 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45480 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52638 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52650 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:52648 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45612 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45616 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45614 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49698 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49714 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:49712 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:42398 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:42400 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:42402 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:43702 - "GET /health HTTP/1.1" 200 OK
+INFO:root:Loading model for uri=models:/argo-dag-demo/15
+INFO:botocore.credentials:Found credentials in environment variables.
+INFO:     127.0.0.1:35302 - "POST /predict/15 HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 410, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/usr/local/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/fastapi/applications.py", line 1135, in __call__
+    await super().__call__(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/usr/local/lib/python3.10/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.10/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/fastapi/routing.py", line 115, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.10/site-packages/fastapi/routing.py", line 101, in app
+    response = await f(request)
+  File "/usr/local/lib/python3.10/site-packages/fastapi/routing.py", line 355, in app
+    raw_response = await run_endpoint_function(
+  File "/usr/local/lib/python3.10/site-packages/fastapi/routing.py", line 245, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+  File "/usr/local/lib/python3.10/site-packages/starlette/concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+  File "/usr/local/lib/python3.10/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+  File "/usr/local/lib/python3.10/site-packages/anyio/_backends/_asyncio.py", line 2502, in run_sync_in_worker_thread
+    return await future
+  File "/usr/local/lib/python3.10/site-packages/anyio/_backends/_asyncio.py", line 986, in run
+    result = context.run(func, *args)
+  File "/app/main.py", line 115, in predict_version
+    pred = model_cache[model_uri].predict(df)[0]
+  File "/usr/local/lib/python3.10/site-packages/mlflow/pyfunc/__init__.py", line 843, in predict
+    return self._predict(data, params)
+  File "/usr/local/lib/python3.10/site-packages/mlflow/pyfunc/__init__.py", line 893, in _predict
+    return self._predict_fn(data, params=params)
+  File "/usr/local/lib/python3.10/site-packages/mlflow/pyfunc/model.py", line 1380, in predict
+    return self.python_model.predict(
+  File "/usr/local/lib/python3.10/site-packages/mlflow/pyfunc/utils/data_validation.py", line 77, in wrapper
+    return func(*args, **kwargs)
+  File "<stdin>", line 31, in predict
+  File "/usr/local/lib/python3.10/site-packages/sklearn/ensemble/_forest.py", line 903, in predict
+    proba = self.predict_proba(X)
+  File "/usr/local/lib/python3.10/site-packages/sklearn/ensemble/_forest.py", line 945, in predict_proba
+    X = self._validate_X_predict(X)
+  File "/usr/local/lib/python3.10/site-packages/sklearn/ensemble/_forest.py", line 637, in _validate_X_predict
+    X = validate_data(
+  File "/usr/local/lib/python3.10/site-packages/sklearn/utils/validation.py", line 2929, in validate_data
+    _check_feature_names(_estimator, X, reset=reset)
+  File "/usr/local/lib/python3.10/site-packages/sklearn/utils/validation.py", line 2787, in _check_feature_names
+    raise ValueError(message)
+ValueError: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- some_feature
+Feature names seen at fit time, yet now missing:
+- petal length (cm)
+- petal width (cm)
+- sepal length (cm)
+- sepal width (cm)
+
+INFO:     10.244.0.1:43708 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:43710 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45548 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45572 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.1:45558 - "GET /health HTTP/1.1" 200 OK
