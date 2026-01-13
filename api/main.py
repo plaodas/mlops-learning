@@ -10,9 +10,12 @@ import joblib
 
 app = FastAPI()
 
-MODEL_URI = "models:/argo-dag-demo/7"  # 後で自動化もできる
 
-logging.basicConfig(level=logging.INFO)
+# Default model URI can be overridden via environment variable `DEFAULT_MODEL_URI`.
+# Falls back to version 1 which we know exists in the cluster.
+MODEL_URI = os.environ.get("DEFAULT_MODEL_URI", "models:/argo-dag-demo/15")
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class _RawModelWrapper:
@@ -75,8 +78,25 @@ def _startup_load_model():
     global model
     logging.info("Startup: loading model %s", MODEL_URI)
     model = _load_model_with_fallback(MODEL_URI)
-    if model is not None:
-        model_cache[MODEL_URI] = model
+    if model is None:
+        # Try to discover available versions from MLflow and load the newest available
+        try:
+            client = MlflowClient()
+            vers = client.search_model_versions("name='argo-dag-demo'")
+            # sort by numeric version descending and try to load each
+            vers_sorted = sorted(vers, key=lambda v: int(v.version), reverse=True)
+            for v in vers_sorted:
+                candidate = f"models:/argo-dag-demo/{v.version}"
+                logging.info("Attempting fallback load for %s", candidate)
+                m = _load_model_with_fallback(candidate)
+                if m is not None:
+                    model = m
+                    model_cache[candidate] = m
+                    logging.info("Loaded model %s", candidate)
+                    break
+        except Exception:
+            logging.exception("Failed to discover model versions from MLflow")
+
     if model is None:
         logging.error("Model failed to load during startup: %s", MODEL_URI)
     else:

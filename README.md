@@ -120,8 +120,9 @@ Learning Log（学習ログ公開）
 - [ Day5 (DAG): Directed Acyclic Graph パイプライン](doc/day5_DAG.md)
 - [Day6: Streamlit ダッシュボード作成](doc/day6.md)
 - ~~Day7: Prometheus/Grafana 監視構築~~
-- [Day7: FastAPI サーバ構築](doc/day7.md)
-- Day8〜: モデル改善・自動化強化
+- [Day7: FastAPI サーバ構築](doc/day7.md) ---> MODEL Ver:15 のみ読み込み可能 ---> 後回しにして先に進む
+- Day8: Prometheus/Grafana 監視構築
+- Day9〜: モデル改善・自動化強化
 
 
 

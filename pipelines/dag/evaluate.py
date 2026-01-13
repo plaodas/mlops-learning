@@ -30,12 +30,16 @@ with mlflow.start_run() as run:
     try:
         import mlflow.sklearn
         mlflow.sklearn.log_model(model, artifact_path="model")
+
     except Exception:
         # If structured logging fails, fall back to raw artifact upload to avoid breaking pipeline
         mlflow.log_artifact("/inputs/model.pkl", artifact_path="model")
 
     client = MlflowClient()
-    model_uri = f"runs:/{run.info.run_id}/model"
+    # model_uri = f"runs:/{run.info.run_id}/model"
+    # model_uri = f"models:/argo-dag-demo/{run.info.run_id}"
+    # Get the REAL artifact URI (S3/MinIO path)
+    artifact_uri = mlflow.get_artifact_uri("model")
 
     # Create the registered model if it doesn't exist. If it already exists,
     # try to restore it (if deleted) or ignore the error so the pipeline can
@@ -54,7 +58,7 @@ with mlflow.start_run() as run:
 
     client.create_model_version(
         name=EXPERIMENT_NAME,
-        source=model_uri,
+        source=artifact_uri,
         run_id=run.info.run_id
     )
 

@@ -57,7 +57,7 @@ kubectl -n mlflow rollout restart deployment/fastapi
 
 ### Step 6：FastAPI アプリにアクセスして推論を試す
 ```bash
-$ curl -X POST http://api.local/predict/15 -H "Content-Type: application/json" -d '{"sepal length (cm)":5.1,"sepal width (cm)":3.5,"petal length (cm)":6.4,"petal width (cm)":2.2}'
+curl -X POST http://api.local/predict/27 -H "Content-Type: application/json" -d '{"sepal length (cm)":5.1,"sepal width (cm)":3.5,"petal length (cm)":6.4,"petal width (cm)":2.2}'
 
 {"prediction":2} <== 推論結果
 
@@ -100,12 +100,12 @@ kubectl -n mlflow rollout restart deployment/fastapi; kubectl -n mlflow rollout 
 ### モデルの artifact 内容を確認したい
 ```bash
 # FastAPI Pod 内でモデルのartifact URIを表示
-kubectl -n mlflow exec <fastapi-pod> -- python -c "from mlflow.tracking import MlflowClient; print(MlflowClient().get_model_version_download_uri('argo-dag-demo','3'))"
+kubectl -n mlflow exec fastapi-85d4b7cf5f-vbgjp  -- python -c "from mlflow.tracking import MlflowClient; print(MlflowClient().get_model_version_download_uri('argo-dag-demo','23'))"
 
 # artifact をダウンロードして中身確認（Pod内で実行）
-kubectl -n mlflow exec <fastapi-pod> -- python - <<'PY'
+kubectl -n mlflow exec fastapi-85d4b7cf5f-vbgjp  -- python - <<'PY'
 import mlflow, tempfile, os
-uri='runs:/c2e73817ec0f4f8ca1fec40de72bdee0/model'
+uri='runs:/abaf2bf898f84206a4e34f0b4f363b84/model'
 dst=tempfile.mkdtemp()
 print('dst',dst)
 p=mlflow.artifacts.download_artifacts(uri, dst_path=dst)
@@ -114,7 +114,7 @@ for r,d,f in os.walk(dst):
 PY
 
 # MLflow レジストリの argo-dag-demo バージョン一覧と MinIO の model.tgz をチェック
-bash -lc "kubectl -n mlflow exec -i mlflow-88f7b9d64-h79dm -- python - <<'PY'
+bash -lc "kubectl -n mlflow exec -i fastapi-85d4b7cf5f-vbgjp -- python - <<'PY'
 from mlflow.tracking import MlflowClient
 c = MlflowClient('http://mlflow-svc.mlflow.svc.cluster.local:5000')
 # fallback: search all and filter
@@ -132,7 +132,6 @@ bash -lc "kubectl -n argo exec mc-client -- sh -c \"mc ls --recursive myminio/ar
 ```bash
 # 手動でバックグラウンド起動（ログを /tmp/mlflow-pf.log に保存）
 nohup kubectl -n mlflow port-forward svc/mlflow-svc 5005:5000 --address 127.0.0.1 > /tmp/mlflow-pf.log 2>&1 & echo $!
-
 # ログ確認
 tail -f /tmp/mlflow-pf.log
 
@@ -141,7 +140,6 @@ pkill -f "kubectl -n mlflow port-forward .*5005:5000"
 
 # ポート確認
 ss -ltnp | grep 5005
-
 ```
 
 
@@ -152,10 +150,10 @@ kubectl -n ingress-nginx logs -l app.kubernetes.io/name=ingress-nginx --tail=200
 
 # FastAPI Pod の状態確認
 kubectl -n mlflow get pods
-kubectl -n mlflow describe pod fastapi-5896c87f9d-npl2w
+kubectl -n mlflow describe pod fastapi-85d4b7cf5f-vbgjp
 
 # FastAPI Pod 内で FastAPI アプリにアクセスできるか確認
-kubectl -n mlflow exec pod/fastapi-5896c87f9d-npl2w -- python -c 'import http.client; c=http.client.HTTPConnection("127.0.0.1",8000,timeout=5); c.request("GET","/"); r=c.getresponse(); print(r.status)'
+kubectl -n mlflow exec pod/fastapi-85d4b7cf5f-vbgjp -- python -c 'import http.client; c=http.client.HTTPConnection("127.0.0.1",8000,timeout=5); c.request("GET","/"); r=c.getresponse(); print(r.status)'
 ```
 
 
@@ -167,7 +165,7 @@ kubectl -n mlflow get deployment fastapi -o wide; echo '---'; kubectl -n mlflow 
 kubectl -n mlflow get pods -o wide; echo '--- rs ---'; kubectl -n mlflow get rs -o wide --sort-by=.metadata.creationTimestamp; echo '--- logs new pods ---'; for p in $(kubectl -n mlflow get pods -l app=fastapi -o jsonpath='{.items[*].metadata.name}'); do echo '***' $p; kubectl -n mlflow logs $p --tail=200 || true; done
 
 # FastAPI Pod のログ確認
-kubectl -n mlflow logs pod/fastapi-c87d9dfb4-p4pdc --tail=500 || true; echo '--- previous ---'; kubectl -n mlflow logs pod/fastapi-c87d9dfb4-p4pdc --previous --tail=500 || true
+kubectl -n mlflow logs pod/fastapi-85d4b7cf5f-vbgjp --tail=500 || true; echo '--- previous ---'; kubectl -n mlflow logs pod/fastapi-85d4b7cf5f-vbgjp --previous --tail=500 || true
 
 ```
 
