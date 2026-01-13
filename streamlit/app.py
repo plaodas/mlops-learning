@@ -7,7 +7,7 @@ import s3_utils
 st.title("Iris 推論ダッシュボード")
 
 # MLflow model URI (registry) — keep as fallback
-MODEL_URI = "models:/argo-dag-demo/1"  # 後で調整可能
+MODEL_URI = "models:/argo-dag-demo/2"  # 後で調整可能
 
 
 @st.cache_resource
@@ -31,7 +31,7 @@ if st.button("Load registry model"):
         st.error(f"Failed to load registry model: {e}")
 
 
-st.subheader("モデルをロード")
+st.subheader("MinIOでモデルをロード")
 
 default_artifact = (
     "artifact:s3:minio.argo.svc.cluster.local:9000:argo-artifacts:mlflow-dag/"

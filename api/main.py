@@ -5,7 +5,7 @@ import logging
 
 app = FastAPI()
 
-MODEL_URI = "models:/argo-dag-demo/1"  # 後で自動化もできる
+MODEL_URI = "models:/argo-dag-demo/3"  # 後で自動化もできる
 
 # モデルをロード（起動時に1回だけ）。見つからなければアプリは停止させずに503を返す。
 try:

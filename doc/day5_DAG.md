@@ -11,6 +11,7 @@ Dockerfile
 ```
 を作成
 
+- evaluate.py -> mlflow へのモデル登録処理追加(2026/01/13)
 
 ```bash
 # Docker イメージのビルド  localhost:5001 にタグを付ける
@@ -62,6 +63,7 @@ kind load docker-image localhost:5001/mlflow-dag:latest --name agritech-mlops
 kubectl -n argo delete workflow mlflow-dag || true
 kubectl -n argo create -f pipelines/dag/mlflow-dag-workflow.yaml
 ```
+
 
 
 
