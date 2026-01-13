@@ -74,3 +74,7 @@ def predict(features: dict):
     pred = model.predict(df)[0]
     return {"prediction": int(pred)}
 
+
+@app.get("/")
+def read_root():
+    return {"message": "FastAPI is running. Use /predict endpoint to get predictions."}
