@@ -37,7 +37,6 @@ with mlflow.start_run() as run:
 
     client = MlflowClient()
     # model_uri = f"runs:/{run.info.run_id}/model"
-    # model_uri = f"models:/argo-dag-demo/{run.info.run_id}"
     # Get the REAL artifact URI (S3/MinIO path)
     artifact_uri = mlflow.get_artifact_uri("model")
 

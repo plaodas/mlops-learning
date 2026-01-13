@@ -78,6 +78,31 @@ curl http://nginx.local
 # Create mlflow namespace
 kubectl create namespace mlflow
 
+
+# MinIO サーバーにポートフォワードしてローカルからアクセスできるようにする
+kubectl -n argo port-forward svc/minio 9000:9000
+  mc alias set minio http://localhost:9000 minio minio123 --api s3v4
+  mc mb minio/mlflow-artifacts
+  mc ls minio
+
+# MinIO mlflowバケットの作成
+bash -lc '
+POD=$(kubectl -n argo get pods --no-headers -o custom-columns=":metadata.name" | grep -m1 minio || true)
+if [ -z "$POD" ]; then echo "No minio pod found in namespace argo"; exit 1; fi
+echo "Using pod: $POD"
+# Ensure mc exists
+kubectl -n argo exec -it "$POD" -- sh -c "which mc >/dev/null 2>&1 || echo 'mc-not-found'"
+kubectl -n argo exec -it "$POD" -- mc alias set local http://127.0.0.1:9000 minio minio123 --api s3v4 || true
+kubectl -n argo exec -it "$POD" -- mc mb local/mlflow-artifacts || true
+kubectl -n argo exec -it "$POD" -- mc ls local || true
+'
+
+
+# MLflow Pod から直接書き込みテス
+kubectl exec -it deploy/mlflow -n mlflow -- sh
+  aws --endpoint-url http://minio.argo.svc.cluster.local:9000 s3 ls s3://mlflow-artifacts
+
+
 # build and push (expects local registry at localhost:5001)
 bash scripts/build_mlflow_image.sh
 

@@ -150,7 +150,7 @@ kubectl -n ingress-nginx logs -l app.kubernetes.io/name=ingress-nginx --tail=200
 
 # FastAPI Pod の状態確認
 kubectl -n mlflow get pods
-kubectl -n mlflow describe pod fastapi-85d4b7cf5f-vbgjp
+kubectl -n mlflow describe pod fastapi-78fb48dcf-6f9w2
 
 # FastAPI Pod 内で FastAPI アプリにアクセスできるか確認
 kubectl -n mlflow exec pod/fastapi-85d4b7cf5f-vbgjp -- python -c 'import http.client; c=http.client.HTTPConnection("127.0.0.1",8000,timeout=5); c.request("GET","/"); r=c.getresponse(); print(r.status)'
@@ -293,7 +293,7 @@ python - <<'PY'
 from mlflow.tracking import MlflowClient
 client = MlflowClient(tracking_uri='http://127.0.0.1:5005')
 name='argo-dag-demo'
-version='1'
+version='28'
 try:
     mv = client.get_model_version(name, version)
     print('model_version.source:', mv.source)
