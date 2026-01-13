@@ -52,7 +52,8 @@ kubectl -n mlflow rollout status deployment/fastapi
 ### FastAPI アプリにアクセスできない
 - kubectl -n mlflow rollout status deployment/fastapi => replicas are pending termination... のまま固まってしまう
 [原因] 古い ReplicaSet が残っていて、新しい Pod がスケジュールされない。
-[対策] 古い ReplicaSet を削除し、kind ノードにイメージをロードし直してから Deployment を再起動する。
+[原因の原因] ImagePullBackOff が発生している。
+[対策] imagePullPolicy を IfNotPresent に設定し、古い ReplicaSet を削除後、kind ノードにイメージをロードし直してから Deployment を再起動する。
 ```bash
 kubectl -n mlflow get deployment fastapi -o wide; echo '---'; kubectl -n mlflow describe deployment fastapi; echo '---'; kubectl -n mlflow get rs -o wide --sort-by=.metadata.creationTimestamp; echo '---'; kubectl -n mlflow get pods -o wide; echo '---'; kubectl -n mlflow get events --sort-by='.lastTimestamp' | tail -n 40
 
@@ -84,3 +85,123 @@ kubectl -n mlflow rollout restart deployment/fastapi; kubectl -n mlflow rollout 
 # => OK
 ```
 
+
+
+## 使うモデル models:/argo-dag-demo/1 を MLflow に登録
+```bash
+# 手動でバックグラウンド起動（ログを /tmp/mlflow-pf.log に保存）
+nohup kubectl -n mlflow port-forward svc/mlflow-svc 5005:5000 --address 127.0.0.1 > /tmp/mlflow-pf.log 2>&1 & echo $!
+
+# models:/argo-dag-demo/1 を登録するスクリプトを実行
+python - <<'PY'
+import os
+import mlflow
+from mlflow.tracking import MlflowClient
+import tempfile
+import shutil
+
+mlflow.set_tracking_uri('http://127.0.0.1:5005')
+client = MlflowClient()
+exp = mlflow.get_experiment_by_name('argo-dag-demo')
+exp_id = exp.experiment_id if exp else client.create_experiment('argo-dag-demo')
+runs = client.search_runs([exp_id], order_by=["attributes.start_time DESC"], max_results=50)
+
+for r in runs:
+    run_id = r.info.run_id
+    print('Inspecting run', run_id)
+    arts = client.list_artifacts(run_id, path='model')
+    if not arts:
+        print(' no model artifact in run')
+        continue
+    for a in arts:
+        if a.path.endswith('model.pkl') or a.path == 'model.pkl':
+            print(' found model file at', a.path)
+            tmpdir = tempfile.mkdtemp(prefix='mlflow_register_')
+            new_run_id = None
+            try:
+                dl = client.download_artifacts(run_id, a.path, dst_path=tmpdir)
+                print(' downloaded to', dl)
+                save_dir = os.path.join(tmpdir, 'pyfunc_model')
+                os.makedirs(save_dir, exist_ok=True)
+                from mlflow.pyfunc import PythonModel
+                import joblib
+
+                class WrapperModel(PythonModel):
+                    def load_context(self, context):
+                        import joblib
+                        self.model = joblib.load(context.artifacts['model'])
+                    def predict(self, context, model_input):
+                        return self.model.predict(model_input)
+
+                artifact_path = os.path.join(tmpdir, os.path.basename(dl))
+                mlflow.pyfunc.save_model(path=save_dir, python_model=WrapperModel(), artifacts={'model': artifact_path})
+                print('Saved pyfunc model to', save_dir)
+                # create temp run to upload artifact
+                new_run = client.create_run(exp_id)
+                new_run_id = new_run.info.run_id
+                print('Created temp run', new_run_id)
+                client.log_artifacts(new_run_id, save_dir, artifact_path='model')
+                print('Logged artifacts to run')
+                model_uri = f'runs:/{new_run_id}/model'
+                print('Registering model from', model_uri)
+                mv = mlflow.register_model(model_uri, 'argo-dag-demo')
+                print('Registered model version', mv.version)
+                client.transition_model_version_stage('argo-dag-demo', mv.version, stage='None')
+            finally:
+                # 必ずランを終了させる（例外が起きても残さない）
+                if new_run_id:
+                    try:
+                        client.set_terminated(new_run_id, status='FINISHED')
+                        print('Terminated temp run', new_run_id)
+                    except Exception as e:
+                        print('Failed to terminate temp run', new_run_id, e)
+                shutil.rmtree(tmpdir)
+                # 終了後は次の候補を探したければ continue する（元コードは早期終了していた）
+print('Done')
+PY
+
+
+# ログ確認
+tail -f /tmp/mlflow-pf.log
+
+# プロセス停止（PIDがわかれば kill <PID>、簡易に）
+pkill -f "kubectl -n mlflow port-forward .*5005:5000"
+
+# ポート確認
+ss -ltnp | grep 5005
+
+
+# 👆で登録したmodelのRunsがrunningのまままの場合、下記で強制終了させる
+python - <<'PY'
+from mlflow.tracking import MlflowClient
+import mlflow
+mlflow.set_tracking_uri('http://127.0.0.1:5005')
+client = MlflowClient()
+exp = client.get_experiment_by_name('argo-dag-demo')
+if not exp:
+    print('Experiment argo-dag-demo not found')
+    raise SystemExit(1)
+exp_id = exp.experiment_id
+runs = client.search_runs([exp_id], filter_string="attributes.status='RUNNING'", max_results=500)
+if not runs:
+    print('No RUNNING runs found')
+else:
+    print('Found', len(runs), 'RUNNING runs:')
+    for r in runs:
+        rid = r.info.run_id
+        print('-', rid)
+    for r in runs:
+        rid = r.info.run_id
+        try:
+            client.set_terminated(rid, status='FINISHED')
+            print('Terminated', rid)
+        except Exception as e:
+            print('Failed to terminate', rid, e)
+# show summary
+runs2 = client.search_runs([exp_id], order_by=["attributes.start_time DESC"], max_results=200)
+print('--- runs after update ---')
+for r in runs2[:20]:
+    print(r.info.run_id, r.info.status)
+PY
+
+```

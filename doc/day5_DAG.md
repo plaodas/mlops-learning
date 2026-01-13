@@ -19,14 +19,16 @@ docker tag registry5001:5000/mlflow-dag:latest localhost:5001/mlflow-dag:latest
 # ローカルの Docker レジストリにプッシュ
 # docker push registry5001:5000/mlflow-dag:latest
 docker push localhost:5001/mlflow-dag:latest
-# Argo Workflow 定義ファイル（mlflow-dag-workflow.yaml）を作成して、Argo Workflows に適用する
-kubectl apply -f mlflow-dag-workflow.yaml
 ```
 
 ## mlflow-dag-workflow.yaml を作成
 mlflow-dag-workflow.yaml に DAG ワークフローを定義します。
+```bash
+# Argo Workflow 定義ファイル（mlflow-dag-workflow.yaml）を作成して、Argo Workflows に適用する
+kubectl apply -f mlflow-dag-workflow.yaml
+```
 
-
+## kind ノードにイメージをロード
 ```bash
 # ワークフローが参照しているイメージ名を確認する
 kubectl -n argo get workflow mlflow-dag -o yaml | grep "image:" -n || true
@@ -34,7 +36,7 @@ kubectl -n argo get workflow mlflow-dag -o yaml | grep "image:" -n || true
 # kind に「そのままの名前」でイメージをロードする（イメージ名が registry5001:5000/... ならそちらを、localhost:5001/... ならそちらを指定）
 # 必ず👆で表示されたワークフローの image: と同じ完全なリポジトリ名を使うこと
 # 例：Workflow が registry5001:5000/mlflow-dag:latest を参照しているなら
-kind load docker-image registry5001:5000/mlflow-dag:latest --name agritech-mlops
+# kind load docker-image registry5001:5000/mlflow-dag:latest --name agritech-mlops
 
 # または Workflow が localhost:5001/mlflow-dag:latest を参照しているなら
 kind load docker-image localhost:5001/mlflow-dag:latest --name agritech-mlops
@@ -50,6 +52,15 @@ kubectl -n argo create -f pipelines/dag/mlflow-dag-workflow.yaml
 # or delete failing pod to force restart:
 kubectl -n argo get pods -l workflows.argoproj.io/workflow=mlflow-dag
 kubectl -n argo delete pod <問題の-pod-name> || true
+```
+
+## ワークフローの修正と再実行
+```bash
+docker build -t registry5001:5000/mlflow-dag:latest -f pipelines/dag/Dockerfile pipelines/dag
+docker tag registry5001:5000/mlflow-dag:latest localhost:5001/mlflow-dag:latest
+kind load docker-image localhost:5001/mlflow-dag:latest --name agritech-mlops
+kubectl -n argo delete workflow mlflow-dag || true
+kubectl -n argo create -f pipelines/dag/mlflow-dag-workflow.yaml
 ```
 
 
