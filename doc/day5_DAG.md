@@ -60,6 +60,7 @@ kubectl -n argo delete pod <問題の-pod-name> || true
 docker build -t registry5001:5000/mlflow-dag:latest -f pipelines/dag/Dockerfile pipelines/dag
 docker tag registry5001:5000/mlflow-dag:latest localhost:5001/mlflow-dag:latest
 kind load docker-image localhost:5001/mlflow-dag:latest --name agritech-mlops
+
 kubectl -n argo delete workflow mlflow-dag || true
 kubectl -n argo create -f pipelines/dag/mlflow-dag-workflow.yaml
 ```

@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-RUN pip install fastapi uvicorn mlflow pandas scikit-learn
+RUN pip install fastapi uvicorn mlflow pandas scikit-learn boto3
 
 COPY main.py /app/main.py
 WORKDIR /app
