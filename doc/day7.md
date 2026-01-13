@@ -57,7 +57,10 @@ kubectl -n mlflow rollout restart deployment/fastapi
 
 ### Step 6：FastAPI アプリにアクセスして推論を試す
 ```bash
-curl -X POST http://api.local/predict/15 -H "Content-Type: application/json" -d '{"sepal length (cm)":5.1,"sepal width (cm)":3.5,"petal length (cm)":1.4,"petal width (cm)":0.2}'
+$ curl -X POST http://api.local/predict/15 -H "Content-Type: application/json" -d '{"sepal length (cm)":5.1,"sepal width (cm)":3.5,"petal length (cm)":6.4,"petal width (cm)":2.2}'
+
+{"prediction":2} <== 推論結果
+
 ```
 
 
