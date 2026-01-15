@@ -200,8 +200,8 @@ FastAPI は uvicorn のメトリクスを Prometheus に出せる。
 これで 運用事故を未然に防止 できます！
 
 
-
-
+メトリクスが取得できるようになりました！
+![image_grafana_argo](image_grafana_argo.png)
 
 
 
@@ -274,9 +274,6 @@ kubectl apply -f monitoring/mlflow-exporter-servicemonitor.yaml
 kubectl -n mlflow rollout restart deployment/mlflow-exporter
 kubectl -n mlflow get pods -o wide
 kubectl -n mlflow describe pod -l app=mlflow-exporter
-
-
-
 
 
 
@@ -396,7 +393,7 @@ curl -s 'http://127.0.0.1:9090/api/v1/targets' | jq '.data.activeTargets[] | sel
 ```bash
 # 1) ServiceMonitor の存在と内容確認
 kubectl get servicemonitor -A
-kubectl -n monitoring get servicemonitor argo-servicemonitor -o yaml
+kubectl -n monitoring get servicemonitor argo-workflows -o yaml
 
 # 2) Prometheus CR の selector / namespaceSelector を確認
 kubectl -n monitoring get prometheus -o name
@@ -430,4 +427,24 @@ kubectl -n monitoring get servicemonitor argo-workflows -o yaml || kubectl -n mo
  kubectl -n argo exec -it argo-server-58f945f8b7-xmn59 -- curl -sS -D - http://127.0.0.1:2746/metrics | sed -n '1,120p'
 
 # workflow-controller-service.yamlを作成
+```
+
+### workflow-controller のメトリクス有効化確認手順
+```bash
+# Service 定義の確認
+kubectl -n argo get svc workflow-controller-metrics -o yaml
+
+# 対応する Deployment/Pod のラベルとコンテナポート確認
+kubectl -n argo get deploy,sts -l app=workflow-controller -o yaml
+kubectl -n argo get pods -l app=workflow-controller -o wide
+# コンテナports を確認
+kubectl -n argo get pod -l app=workflow-controller -o yaml | sed -n '1,200p'
+
+# ローカルから直接 metrics にアクセスしてみる（Service 経由）
+kubectl -n argo port-forward svc/workflow-controller-metrics 9090:9090 &
+curl -v http://127.0.0.1:9090/metrics || true
+curl -vk https://127.0.0.1:9090/metrics || true  # HTTPS でも試す->NG
+
+# Prometheus が実際にターゲットを発見しているか確認
+curl -s 'http://127.0.0.1:9090/api/v1/targets' | jq '.data.activeTargets[] | select(.discoveredLabels.__meta_kubernetes_namespace=="argo")'
 ```
