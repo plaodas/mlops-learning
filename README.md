@@ -125,7 +125,7 @@ Learning Log（学習ログ公開）
   --> mlflowでsqlite backendに登録したモデルをFastAPIで読み込む際にエラー発生中（調査中）
   --> postgresql backend への移行を検討中
   --> 後回しにしてDay8に進む
-- Day8: Prometheus/Grafana 監視構築
+- [Day8: Prometheus/Grafana 監視構築](doc/day8.md)
 - Day9〜: モデル改善・自動化強化
 
 
