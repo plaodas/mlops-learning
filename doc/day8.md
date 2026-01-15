@@ -428,3 +428,6 @@ kubectl -n monitoring get servicemonitor argo-workflows -o yaml || kubectl -n mo
  kubectl -n argo get endpoints argo-server -o yaml || true
  kubectl -n argo get pods -l app=argo-server -o wide || true
  kubectl -n argo exec -it argo-server-58f945f8b7-xmn59 -- curl -sS -D - http://127.0.0.1:2746/metrics | sed -n '1,120p'
+
+# workflow-controller-service.yamlを作成
+```
