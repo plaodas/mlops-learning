@@ -16,3 +16,7 @@ data:
         secretKeySecret:
           name: minio-cred
           key: secretkey
+    metricsConfig:
+      enabled: true
+      path: /metrics
+      port: 9090

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-exporter
+  namespace: mlflow
+  labels:
+    app: mlflow-exporter
+spec:
+  selector:
+    app: mlflow-exporter
+  ports:
+  - name: metrics
+    port: 8000
+    targetPort: 8000

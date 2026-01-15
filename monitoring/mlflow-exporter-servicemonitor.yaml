@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mlflow-exporter
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+    - mlflow
+  selector:
+    matchLabels:
+      app: mlflow-exporter
+  endpoints:
+  - port: metrics
+    interval: 15s

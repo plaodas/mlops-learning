@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-exporter
+  namespace: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow-exporter
+  template:
+    metadata:
+      labels:
+        app: mlflow-exporter
+    spec:
+      containers:
+      - name: exporter
+        image: localhost:5001/mlflow-prometheus-exporter:local
+        imagePullPolicy: IfNotPresent
+        command:
+          - "python3"
+          - "mlflow_exporter.py"
+        args:
+          - "--mlflowurl=http://mlflow-svc.mlflow.svc.cluster.local:5000"
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+          requests:
+            memory: "128Mi"
+            cpu: "250m"

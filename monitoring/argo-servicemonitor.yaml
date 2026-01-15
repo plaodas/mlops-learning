@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argo-workflows
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+    - argo
+  selector:
+    matchLabels:
+      app: workflow-controller
+  endpoints:
+    - port: metrics
+      interval: 15s
+      scheme: https
+      tlsConfig:
+        insecureSkipVerify: true

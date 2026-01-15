@@ -1,0 +1,43 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "argo-workflows-overview",
+    "title": "Argo Workflows Overview",
+    "tags": ["argo","workflows"],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 1,
+    "refresh": "30s",
+    "time": { "from": "now-6h", "to": "now" },
+    "description": "Basic Argo Workflows dashboard. Adjust PromQL queries to match the metrics exposed in your cluster (the metric names here are examples).",
+    "panels": [
+      {
+        "id": 1,
+        "type": "graph",
+        "title": "Workflow Runs (rate)",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          { "expr": "sum(rate(workflow_runs_total[5m])) by (status)", "legendFormat": "{{status}}" }
+        ]
+      },
+      {
+        "id": 2,
+        "type": "graph",
+        "title": "Workflow Duration (95th percentile)",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          { "expr": "histogram_quantile(0.95, sum(rate(workflow_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p95" }
+        ]
+      },
+      {
+        "id": 3,
+        "type": "table",
+        "title": "Top Failed Workflows (1h)",
+        "gridPos": { "x": 0, "y": 8, "w": 24, "h": 6 },
+        "targets": [
+          { "expr": "topk(10, sum(increase(workflow_failed_total[1h])) by (workflow))", "format": "table" }
+        ]
+      }
+    ]
+  }
+}

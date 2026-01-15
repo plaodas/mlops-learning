@@ -1,0 +1,43 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "mlflow-overview",
+    "title": "MLflow Overview",
+    "tags": ["mlflow","models"],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 1,
+    "refresh": "30s",
+    "time": { "from": "now-6h", "to": "now" },
+    "description": "MLflow metrics overview. Edit PromQL expressions to match the exporter metrics (metric names are examples).",
+    "panels": [
+      {
+        "id": 1,
+        "type": "graph",
+        "title": "MLflow Run Count",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          { "expr": "sum(mlflow_runs_total)", "legendFormat": "runs" }
+        ]
+      },
+      {
+        "id": 2,
+        "type": "graph",
+        "title": "Metric Ingest Rate (example)",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          { "expr": "sum(rate(mlflow_metric_points_total[5m])) by (metric)", "legendFormat": "{{metric}}" }
+        ]
+      },
+      {
+        "id": 3,
+        "type": "table",
+        "title": "Latest Model Versions (example)",
+        "gridPos": { "x": 0, "y": 8, "w": 24, "h": 6 },
+        "targets": [
+          { "expr": "topk(20, mlflow_model_version_count)", "format": "table" }
+        ]
+      }
+    ]
+  }
+}
