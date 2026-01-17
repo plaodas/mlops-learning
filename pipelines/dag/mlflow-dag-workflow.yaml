@@ -31,6 +31,16 @@ spec:
           - name: preprocessed
             from: "{{tasks.preprocess.outputs.artifacts.preprocessed}}"
 
+      - name: push-metrics
+        template: push-metrics
+        dependencies: [evaluate]
+        arguments:
+          parameters:
+            - name: accuracy
+              value: "{{tasks.evaluate.outputs.parameters.accuracy}}"
+            - name: loss
+              value: "{{tasks.evaluate.outputs.parameters.loss}}"
+
   - name: preprocess
     container:
       image: localhost:5001/mlflow-dag:latest
@@ -123,4 +133,35 @@ spec:
       - name: AWS_REGION
         value: "us-east-1"
       command: ["/bin/sh", "-c", "mkdir -p /outputs && python /evaluate.py"]
+    outputs:
+      parameters:
+        - name: accuracy
+          valueFrom:
+            path: /outputs/accuracy
+        - name: loss
+          valueFrom:
+            path: /outputs/loss
 
+  - name: push-metrics
+    inputs:
+      parameters:
+        - name: accuracy
+        - name: loss
+    script:
+      image: python:3.10
+      command: ["python"]
+      source: |
+        import requests
+
+        accuracy = {{inputs.parameters.accuracy}}
+        loss = {{inputs.parameters.loss}}
+
+        data = f"""
+        model_accuracy {accuracy}
+        model_loss {loss}
+        """
+
+        requests.post(
+          "http://pushgateway.monitoring.svc.cluster.local:9091/metrics/job/model_training",
+          data=data
+        )

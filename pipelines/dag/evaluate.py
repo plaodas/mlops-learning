@@ -1,6 +1,6 @@
 import pandas as pd
 import joblib
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, log_loss
 import mlflow
 from mlflow.tracking import MlflowClient
 
@@ -23,9 +23,11 @@ y = df["target"]
 model = joblib.load("/inputs/model.pkl")
 preds = model.predict(X)
 acc = accuracy_score(y, preds)
+loss = log_loss(y, preds)
 
 with mlflow.start_run() as run:
     mlflow.log_metric("accuracy", acc)
+    mlflow.log_metric("loss", loss)
     # Save model in MLflow format so an MLmodel metadata file is created
     try:
         import mlflow.sklearn
@@ -60,5 +62,11 @@ with mlflow.start_run() as run:
         source=artifact_uri,
         run_id=run.info.run_id
     )
+
+    with open("/outputs/accuracy", "w") as f:
+        f.write(str(acc))
+
+    with open("/outputs/loss", "w") as f:
+        f.write(str(loss))
 
 print("Evaluation done.")
