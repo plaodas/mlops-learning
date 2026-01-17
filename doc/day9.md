@@ -1,14 +1,17 @@
 # メトリクスの設定
 
 ### Grafana のポートフォワード
+```bash
 export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=kube-prometheus-stack" -oname)
 kubectl --namespace monitoring port-forward $POD_NAME 3000
+```
 
 ### Prometheus のポートフォワード
+```bash
 kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
 
 curl -v http://127.0.0.1:9090/metrics || true
-
+```
 
 ### serviceMonitor/monitoring/argo-workflows/0 のエンドポイントhttps://10.244.0.26:9090/metricsにブラウザからアクセスする方法
 
