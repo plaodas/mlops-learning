@@ -126,7 +126,8 @@ Learning Log（学習ログ公開）
   --> postgresql backend への移行を検討中
   --> 後回しにしてDay8に進む
 - [Day8: Prometheus/Grafana 監視構築](doc/day8.md)
-- Day9〜: モデル改善・自動化強化
+- [Day9: pushgatewayでargoからaccuracy/lossを取得](doc/day9.md)
+- Day10〜: モデル改善・自動化強化
 
 
 
