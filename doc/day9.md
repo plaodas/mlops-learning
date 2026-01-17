@@ -113,6 +113,7 @@ kubectl -n argo delete workflow mlflow-dag || true
 kubectl -n argo create -f pipelines/dag/mlflow-dag-workflow.yaml
 ```
 
+![argo push metrics](image_argo_push_metrics.png)
 
 ![pushgateway](image_pushgateway.png)
 
