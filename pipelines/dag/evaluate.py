@@ -23,7 +23,10 @@ y = df["target"]
 model = joblib.load("/inputs/model.pkl")
 preds = model.predict(X)
 acc = accuracy_score(y, preds)
-loss = log_loss(y, preds)
+
+# Replace model.predict with model.predict_proba to calculate log_loss correctly
+probs = model.predict_proba(X)  # クラス確率を取得
+loss = log_loss(y, probs)  # クラス確率を使用して log_loss を計算
 
 with mlflow.start_run() as run:
     mlflow.log_metric("accuracy", acc)
@@ -63,10 +66,13 @@ with mlflow.start_run() as run:
         run_id=run.info.run_id
     )
 
-    with open("/outputs/accuracy", "w") as f:
-        f.write(str(acc))
 
-    with open("/outputs/loss", "w") as f:
-        f.write(str(loss))
+print(f"Accuracy: {acc}, Loss: {loss}")
+
+with open("/outputs/accuracy", "w") as f:
+    f.write(str(acc))
+
+with open("/outputs/loss", "w") as f:
+    f.write(str(loss))
 
 print("Evaluation done.")

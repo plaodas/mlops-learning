@@ -119,10 +119,36 @@ pipelines/dag/mlflow-dag-workflow.yaml の中に以下のステップを追加
         - name: loss
 ```
 ```bash
+docker build -t registry5001:5000/mlflow-dag:latest -f pipelines/dag/Dockerfile pipelines/dag
+docker tag registry5001:5000/mlflow-dag:latest localhost:5001/mlflow-dag:latest
+kind load docker-image localhost:5001/mlflow-dag:latest --name agritech-mlops
 kubectl -n argo delete workflow mlflow-dag || true
 kubectl -n argo create -f pipelines/dag/mlflow-dag-workflow.yaml
 ```
 
+
+### トラブルシューティング
+```bash
+# Service の確認
+kubectl -n monitoring get svc
+
+# Pushgateway の Service 詳細を確認
+kubectl -n monitoring describe svc pushgateway-prometheus-pushgateway
+
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9091:9091
+
+echo "model_accuracy 0.95" | curl --data-binary @- http://localhost:9091/metrics/job/model_training
+
+
+kubectl -n monitoring port-forward svc/pushgateway-prometheus-pushgateway 9091:9091
+http://localhost:9091/
+#でつながったがmetricsメニューの表示は空だった
+
+echo "model_accuracy 0.95" | curl --data-binary @- http://localhost:9091/metrics/job/model_training
+# でmetricsメニューに表示された
+
+
+```
 
 ステップ 3：Prometheus でメトリクスを拾う
 

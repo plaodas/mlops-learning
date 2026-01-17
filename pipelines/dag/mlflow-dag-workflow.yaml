@@ -143,25 +143,23 @@ spec:
             path: /outputs/loss
 
   - name: push-metrics
+    container:
+      image: custom-python:3.10
+      command: ["python", "-c"]
+      args:
+        - |
+          import requests
+          accuracy = {{inputs.parameters.accuracy}}
+          loss = {{inputs.parameters.loss}}
+          data = f"""
+          model_accuracy {accuracy}
+          model_loss {loss}
+          """
+          requests.post(
+            "http://pushgateway.monitoring.svc.cluster.local:9091/metrics/job/model_training",
+            data=data
+          )
     inputs:
       parameters:
         - name: accuracy
         - name: loss
-    script:
-      image: python:3.10
-      command: ["python"]
-      source: |
-        import requests
-
-        accuracy = {{inputs.parameters.accuracy}}
-        loss = {{inputs.parameters.loss}}
-
-        data = f"""
-        model_accuracy {accuracy}
-        model_loss {loss}
-        """
-
-        requests.post(
-          "http://pushgateway.monitoring.svc.cluster.local:9091/metrics/job/model_training",
-          data=data
-        )
