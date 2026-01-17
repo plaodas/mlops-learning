@@ -157,7 +157,7 @@ spec:
           model_loss {loss}
           """
           requests.post(
-            "http://pushgateway.monitoring.svc.cluster.local:9091/metrics/job/model_training",
+            "http://pushgateway-prometheus-pushgateway.monitoring.svc.cluster.local:9091/metrics/job/model_training",
             data=data
           )
     inputs:
