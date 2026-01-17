@@ -144,7 +144,8 @@ spec:
 
   - name: push-metrics
     container:
-      image: custom-python:3.10
+      image: localhost:5001/mlflow-dag:latest
+      imagePullPolicy: IfNotPresent
       command: ["python", "-c"]
       args:
         - |

@@ -146,7 +146,8 @@ http://localhost:9091/
 
 echo "model_accuracy 0.95" | curl --data-binary @- http://localhost:9091/metrics/job/model_training
 # でmetricsメニューに表示された
-
+# -> Pushgateway の設定は正しい
+# -> Argo Workflow の push-metrics ステップの確認が必要 -> requests モジュールが入っていなかった
 
 ```
 
